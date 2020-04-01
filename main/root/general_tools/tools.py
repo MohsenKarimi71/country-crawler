@@ -132,8 +132,10 @@ COUNTRY_CONTEXTS = {
         "india": {
             "phone_phrases": [],
             "phone_patterns": ["\+\d{1,2}[\s\-]\d{4}[\s\-]\d{6}", "\+\d{2}[\s\-]\d{2}[\s\-]\d{3}[\s\-]\d{5}"],
-            "address_patterns": [],
-            "contact_text": []
+            "address_patterns": [
+                
+            ],
+            "contact_text": ["contact", "contact us"]
         },
         "poland": {
             "phone_phrases": [],
