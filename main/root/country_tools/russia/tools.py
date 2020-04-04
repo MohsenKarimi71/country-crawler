@@ -4,7 +4,7 @@ import requests
 import re
 import json
 
-from general_tools.tools import getHtmlResponse, getSoup
+from root.general_tools.tools import getHtmlResponse, getSoup
 from googletrans import Translator
 translator = Translator()
 
@@ -326,7 +326,9 @@ def find_russian_addresses(text, patterns):
     for pattern in patterns:
         items = re.findall(pattern, text, flags=re.IGNORECASE)
         for item in items:
-            found_addresses.append(item[0])
+            add = re.sub("\n", " ", item[0])
+            add = re.sub("\s{2,}", " ", add)
+            found_addresses.append(add)
     return list(set(found_addresses))
 
 def get_russian_local_address_parts(address):

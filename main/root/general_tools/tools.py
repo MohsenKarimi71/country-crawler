@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import re
 import json
-from general_tools.search_settings import *
+from root.general_tools.search_settings import *
 
 from fake_useragent import UserAgent
 ua = UserAgent()
@@ -133,7 +133,34 @@ COUNTRY_CONTEXTS = {
             "phone_phrases": [],
             "phone_patterns": ["\+\d{1,2}[\s\-]\d{4}[\s\-]\d{6}", "\+\d{2}[\s\-]\d{2}[\s\-]\d{3}[\s\-]\d{5}"],
             "address_patterns": [
-                
+                "(" +
+                    "(" +
+                        "(address(?!\w)\s?:?)|" +
+                        "(#\s?\d)|" +
+                        "(plot(?!\w))|" +
+                        "(([^\n]{2,35}\s?,\s?)?[\w\-]+\s*(\n\s*th\s*\n)?\s*(?<!\w)floor(?!\w))|" +
+                        "(office(?!\w))|" +
+                        "(Centre\s?:)|"
+                        "(no\.\s?\d)|" +
+                        "([^\n]{2,35}street(?!\w))|" +
+                        "([^\n]{2,35}road(?!\w))|" +
+                        "([^\n]{2,35}highway(?!\w))" +
+                    ")" +
+                    "([\w\s:,\|\.\-/–\(\)&#]{10,140})" +
+                    "(" +
+                        "(india)|" +
+                        "((?<!\d)\d{3}[\s\-\.]?\d{3}(?!\d))|" +
+                        "((?<!\w)AP(?!\w))|((?<!\w)AR(?!\w))|((?<!\w)AS(?!\w))|((?<!\w)BR(?!\w))|((?<!\w)CG(?!\w))|((?<!\w)GA(?!\w))|((?<!\w)GJ(?!\w))|" +
+                        "((?<!\w)HR(?!\w))|((?<!\w)HP(?!\w))|((?<!\w)JH(?!\w))|((?<!\w)KA(?!\w))|((?<!\w)KL(?!\w))|((?<!\w)MP(?!\w))|((?<!\w)MH(?!\w))|" +
+                        "((?<!\w)MN(?!\w))|((?<!\w)ML(?!\w))|((?<!\w)MZ(?!\w))|((?<!\w)NL(?!\w))|((?<!\w)OD(?!\w))|((?<!\w)PB(?!\w))|((?<!\w)RJ(?!\w))|" +
+                        "((?<!\w)SK(?!\w))|((?<!\w)TN(?!\w))|((?<!\w)TS(?!\w))|((?<!\w)TR(?!\w))|((?<!\w)UP(?!\w))|((?<!\w)UK(?!\w))|((?<!\w)WB(?!\w))|" +
+                        "((?<!\w)AN(?!\w))|((?<!\w)CH(?!\w))|((?<!\w)DD(?!\w))|((?<!\w)DL(?!\w))|((?<!\w)JK(?!\w))|((?<!\w)LA(?!\w))|((?<!\w)LD(?!\w))|" +
+                        "((?<!\w)PY(?!\w))|(Andhra Pradesh)|(Arunachal Pradesh)|(Assam)|(Bihar)|(Chhattisgarh)|(Goa)|(Gujarat)|(Haryana)|(Himachal Pradesh)|" +
+                        "(Jharkhand)|(Karnataka)|(Kerala)|(Madhya Pradesh)|(Maharashtra)|(Manipur)|(Meghalaya)|(Mizoram)|(Nagaland)|(Odisha)|(Punjab)|" +
+                        "(Rajasthan)|(Sikkim)|(Tamil Nadu)|(Telangana)|(Tripura)|(Uttar Pradesh)|(Uttarakhand)|(West Bengal)|(Andaman and Nicobar Islands)|"
+                        "(Chandigarh)|(Dadra and Nagar Haveli and Daman and Diu)|(Delhi)|(Jammu and Kashmir)|(Ladakh)|(Lakshadweep)|(Puducherry)"
+                    ")" +
+                ")",
             ],
             "contact_text": ["contact", "contact us"]
         },
@@ -289,8 +316,10 @@ COUNTRY_CONTEXTS = {
             "address_patterns": [
                 "(" + 
                     "(" + 
-                        "(Blvd\.)|(Blvrd\.)|(Calle)|(Av\.?(?!\w))|(AVENIDA)|(Avda\.)|(Cuarta)|((?<!\w)\w[ #\w\.\-,]{,25}Col\.)|(Calz\.)|([\s\w\.\-]{,30}s/n)|(Piso)|(Cd\.)|" + 
-                        "((?<!\w)\w[ #\w\.\-,]{,25}s/n)|(DIRECCIÓN\s?:?)|(address\s?:)|(Oficina\s?:?)" +
+                        "(Blvd\.)|(Blvrd\.)|(Calle)|(Av\.?(?!\w))|(AVENIDA)|" + 
+                        "(Avda\.)|(Cuarta)|((?<!\w)\w[ #\w\.\-,]{,25}Col\.)|" + 
+                        "(Calz\.)|([^\n]{,30}s/n)|(Piso)|(Cd\.)|" + 
+                        "(DIRECCIÓN\s?:?)|(address\s?:)|(Oficina\s?:?)" +
                     ")" + 
                     "(" + 
                         "[/,;\w\s\-\|\.]{5,120}" + 
@@ -714,7 +743,6 @@ def get_unique_emails_for_composite_data(original_email_list):
         return original_email_list 
 
 
-
 def json2composite(json_obj, country):
     all_addresses = []
     all_phones = []
@@ -997,6 +1025,10 @@ def find_addresses(text, patterns, country):
         from country_tools.mexico.tools import find_mexican_addresses
         addresses = find_mexican_addresses(text, patterns)
     
+    elif(country == "india"):
+        from country_tools.india.tools import find_indian_addresses
+        addresses = find_indian_addresses(text, patterns)
+    
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1016,6 +1048,10 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "mexico"):
         from country_tools.mexico.tools import purify_mexican_addresses
         purified_addresses = purify_mexican_addresses(address_list)
+    
+    elif(country == "india"):
+        from country_tools.india.tools import purify_indian_addresses
+        purified_addresses = purify_indian_addresses(address_list)
     
     return purified_addresses
 
@@ -1038,6 +1074,10 @@ def find_phones(text, patterns, country):
         from country_tools.mexico.tools import find_mexican_phones
         phones = find_mexican_phones(text, patterns)
     
+    elif(country == "india"):
+        from country_tools.india.tools import find_indian_phones
+        phones = find_indian_phones(text, patterns)
+    
     return phones
 
 def purify_phones(phone_list, country):
@@ -1057,4 +1097,9 @@ def purify_phones(phone_list, country):
     elif(country == "mexico"):
         from country_tools.mexico.tools import purify_mexican_phones
         purified_phones = purify_mexican_phones(phone_list)
+    
+    elif(country == "india"):
+        from country_tools.india.tools import purify_indian_phones
+        purified_phones = purify_indian_phones(phone_list)
+
     return purified_phones

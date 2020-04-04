@@ -1,38 +1,43 @@
 import re
-from general_tools.tools import getHtmlResponse, getSoup, load_country_context, getDomainTitle, get_google_pin_address, getGoogleMatchedData, find_emails, purify_emails, find_addresses, purify_addresses, find_phones, purify_phones
+from bs4 import NavigableString
+from root.general_tools.tools import getHtmlResponse, getSoup, load_country_context, getDomainTitle, get_google_pin_address, getGoogleMatchedData, find_emails, purify_emails, find_addresses, purify_addresses, find_phones, purify_phones
 #from mylib.mymodules import validate_domain
 #from mylib.mymodules import fixed_title, save_logo
 
 # Functions
 def find_second_page_url(main_page_soup, url, country_context):
-    if(url[-1] == "/"):
-        url = url[:-1]
-    second_page_url = None
-    anchors = main_page_soup.find_all(href=True)
-    found = False
-    for txt in country_context.get('contact_text'):
-        t_ignore_case = re.compile(txt, re.IGNORECASE)
-        for a in anchors:
-            a_text = a.get_text()
-            found_txt = re.search(t_ignore_case, a_text)
-            if found_txt:
-                h = a['href']
-                h = h.strip()
-                # avoid emails as second page url
-                if h.find('@') != -1:
-                    continue
-                if(len(h) > 0):
-                    found = True
-                    if (h[0] == '/'):
-                        second_page_url = url + h
-                    elif re.search("http", h):
-                        second_page_url = h
-                    else:
-                        second_page_url = url + "/" + h
-                    break
-        if found:
-            break
-    return second_page_url
+    body = main_page_soup.body
+    if(body):
+        if(url[-1] == "/"):
+            url = url[:-1]
+        second_page_url = None
+        anchors = body.find_all(href=True)
+        found = False
+        for txt in country_context.get('contact_text'):
+            t_ignore_case = re.compile(txt, re.IGNORECASE)
+            for a in anchors:
+                a_text = a.get_text()
+                found_txt = re.search(t_ignore_case, a_text)
+                if found_txt:
+                    h = a['href']
+                    h = h.strip()
+                    # avoid emails as second page url
+                    if h.find('@') != -1:
+                        continue
+                    if(len(h) > 0):
+                        found = True
+                        if (h[0] == '/'):
+                            second_page_url = url + h
+                        elif re.search("http", h):
+                            second_page_url = h
+                        else:
+                            second_page_url = url + "/" + h
+                        break
+            if found:
+                break
+        return second_page_url
+    else:
+        return None
 
 def get_website_logo(soup_obj):
     if(soup_obj):
@@ -98,7 +103,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
     website_data["addresses"] = []
 
     if(contact_page_soup):
-        text = " ".join(string for string in contact_page_soup.stripped_strings)
+        text = "\n".join(string for string in contact_page_soup.stripped_strings)
         website_data["addresses"] = find_addresses(text[:20000], country_context["address_patterns"], country)
         google_pin_address = get_google_pin_address(contact_page_soup, url, language)
         website_data["addresses"] += google_pin_address
@@ -107,7 +112,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
         website_data["emails"] = find_emails(text)
 
     if(main_page_soup):
-        text = " ".join(string for string in main_page_soup.stripped_strings)
+        text = "\n".join(string for string in main_page_soup.stripped_strings)
         website_data["addresses"] += find_addresses(text[:20000], country_context["address_patterns"], country)
 
         google_pin_address = get_google_pin_address(main_page_soup, url, language)

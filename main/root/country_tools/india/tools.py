@@ -1,4 +1,4 @@
-from general_tools.tools import get_google_formatted_address_using_address
+from root.general_tools.tools import get_google_formatted_address_using_address
 import re
 
 # VARIABLES
@@ -50,21 +50,51 @@ india_states = {
 def find_indian_addresses(text, patterns):
     found_addresses = []
     for pattern in patterns:
-        items = re.findall(pattern, text)
+        items = re.findall(pattern, text, flags=re.IGNORECASE)
         if(items):
             for item in items:
-                # cleaning addresses
-                add = re.sub("\n", " ", item[0])
-                add = add.strip()
-                # do it
-                add = re.sub("\s{2,}", " ", add)
-                found_addresses.append(add)
+                found_addresses.append(item[0].strip())
     return list(set(found_addresses))
 
 
 def recheck_indian_address(address):
-    # do it
-    return None
+    if(("(" in address and ")" in address) or (not "(" in address and not ")" in address)):
+        m = re.search("(address\s?:?)", address, flags=re.IGNORECASE)
+        if(m):
+            address = address.split(m.group(0))[1]
+        
+        m = re.search("(centre\s?:)", address, flags=re.IGNORECASE)
+        if(m):
+            address = address.split(m.group(0))[1]
+
+        m = re.search("((office\s?:)|(office\s*\n))", address, flags=re.IGNORECASE)
+        if(m):
+            address = address.split(m.group(0))[1]
+        
+        #m = re.search("((Private Limited)|(Pvt\. Ltd\.))", address, flags=re.IGNORECASE)
+        #if(m):
+        #    address = address.split(m.group(0))[1]
+        
+        m = re.search("((phone)|(tel(?!\w)))", address, flags=re.IGNORECASE)
+        if(m):
+            address = address.split(m.group(0))[0]
+
+        address = re.sub("\n", ", ", address)
+        address = re.sub("\r", ", ", address)
+        address = re.sub("\t", ", ", address)
+        address = re.sub(",\s*,", ", ", address)
+        address = re.sub("\s{2,}", " ", address)
+        address = address.strip()
+        address = address.strip(",")
+        address = address.strip(".")
+        address = address.strip(",")
+        if(len(address) < 25):
+            print("not reached minimum length... > ", address)
+            return None
+        else:
+            return address.strip()
+    else:
+        return None
 
 def get_indian_unique_addresses(address_list):
     unique_addresses = []
@@ -166,6 +196,7 @@ def get_indian_address_parts(address, language="pt"):
     state = is_brazilian_state(address[-1])
     if("some condition"):
         # do it
+        pass
     else:
         print("Splitting not successfull. Using google ...")
         # using google API to find formatted address
@@ -182,11 +213,10 @@ def purify_indian_addresses(address_list):
     '''
     rechecked_addresses = []
     for address in address_list:
-        adds = recheck_indian_address(address)
-        for add in adds:
-            if(not add in rechecked_addresses):
-                rechecked_addresses.append(add)
-    
+        new_add = recheck_indian_address(address)
+        if(new_add):
+            rechecked_addresses.append(new_add)
+    rechecked_addresses = list(set(rechecked_addresses))
     unique_addresses = get_indian_unique_addresses(rechecked_addresses)
 
     splitted_addresses = []
