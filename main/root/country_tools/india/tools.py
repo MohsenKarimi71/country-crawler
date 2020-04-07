@@ -2,9 +2,30 @@ from root.general_tools.tools import get_google_formatted_address_using_address
 import re
 
 # VARIABLES
-to_be_deleted_from_address = []
+to_be_deleted_from_address = ["Floor", "No\.", "Office"]
 number_founder_pattern = "[^\d]?(\d+)[^\d]?"
 
+indian_address_end_pattern1 = [
+                                "(" +
+                                    "(india)|" +
+                                    "((?<!\d)\d{3}[\s\-\.]?\d{3}(?!\d))|" + 
+                                    "(Andhra Pradesh)|(Arunachal Pradesh)|(Assam)|(Bihar)|(Chhattisgarh)|(Goa)|(Gujarat)|(Haryana)|(Himachal Pradesh)|" +
+                                    "(Jharkhand)|(Karnataka)|(Kerala)|(Madhya Pradesh)|(Maharashtra)|(Manipur)|(Meghalaya)|(Mizoram)|(Nagaland)|(Odisha)|(Punjab)|" +
+                                    "(Rajasthan)|(Sikkim)|(Tamil Nadu)|(Telangana)|(Tripura)|(Uttar Pradesh)|(Uttarakhand)|(West Bengal)|(Andaman and Nicobar Islands)|"
+                                    "(Chandigarh)|(Dadra and Nagar Haveli and Daman and Diu)|(Delhi)|(Jammu and Kashmir)|(Ladakh)|(Lakshadweep)|(Puducherry)$"
+                                ")",
+]
+
+indian_address_end_pattern2 = [
+                                "(" +
+                                    "((?<!\w)AP(?!\w))|((?<!\w)AR(?!\w))|((?<!\w)AS(?!\w))|((?<!\w)BR(?!\w))|((?<!\w)CG(?!\w))|((?<!\w)GA(?!\w))|((?<!\w)GJ(?!\w))|" +
+                                    "((?<!\w)HR(?!\w))|((?<!\w)HP(?!\w))|((?<!\w)JH(?!\w))|((?<!\w)KA(?!\w))|((?<!\w)KL(?!\w))|((?<!\w)MP(?!\w))|((?<!\w)MH(?!\w))|" +
+                                    "((?<!\w)MN(?!\w))|((?<!\w)ML(?!\w))|((?<!\w)MZ(?!\w))|((?<!\w)NL(?!\w))|((?<!\w)OD(?!\w))|((?<!\w)PB(?!\w))|((?<!\w)RJ(?!\w))|" +
+                                    "((?<!\w)SK(?!\w))|((?<!\w)TN(?!\w))|((?<!\w)TS(?!\w))|((?<!\w)TR(?!\w))|((?<!\w)UP(?!\w))|((?<!\w)UK(?!\w))|((?<!\w)WB(?!\w))|" +
+                                    "((?<!\w)AN(?!\w))|((?<!\w)CH(?!\w))|((?<!\w)DD(?!\w))|((?<!\w)DL(?!\w))|((?<!\w)JK(?!\w))|((?<!\w)LA(?!\w))|((?<!\w)LD(?!\w))|" +
+                                    "((?<!\w)PY(?!\w))" +
+                                "$)",
+]
 
 india_states = {
     "AP":"Andhra Pradesh",
@@ -47,13 +68,19 @@ india_states = {
 }
 
 # FUNCTIONS
-def find_indian_addresses(text, patterns):
+def find_indian_addresses(text, patterns, is_contact_page=False):
     found_addresses = []
     for pattern in patterns:
         items = re.findall(pattern, text, flags=re.IGNORECASE)
         if(items):
             for item in items:
                 found_addresses.append(item[0].strip())
+    if(is_contact_page and len(found_addresses) == 0):
+        pattern = "(\n(\s{,150}[#&\w \-\.\(\)/–:’]{2,40},){2,8}\s{,150}[#&\w \-\.\(\)/–:’]{2,40}\n)"
+        items = re.findall(pattern, text)
+        if(items):
+            for item in items:
+                found_addresses.append(item[0])
     return list(set(found_addresses))
 
 
@@ -82,17 +109,26 @@ def recheck_indian_address(address):
         address = re.sub("\n", ", ", address)
         address = re.sub("\r", ", ", address)
         address = re.sub("\t", ", ", address)
-        address = re.sub(",\s*,", ", ", address)
+        address = re.sub("((,\s*){2,})", ", ", address)
         address = re.sub("\s{2,}", " ", address)
         address = address.strip()
         address = address.strip(",")
         address = address.strip(".")
         address = address.strip(",")
+
         if(len(address) < 25):
             print("not reached minimum length... > ", address)
             return None
-        else:
-            return address.strip()
+        if(address.count(",") > 10 or address.count(",") == 0):
+            return None
+
+        if(sum(1 for m in re.finditer("\d", address)) > 14):
+            return None
+        
+        if((not re.search(indian_address_end_pattern1[0], address, flags=re.IGNORECASE)) and (not re.search(indian_address_end_pattern2[0], address))):
+            return None
+
+        return address.strip()
     else:
         return None
 
@@ -106,14 +142,14 @@ def get_indian_unique_addresses(address_list):
         # deleting common words
         for add in temp_list:
             for phrase in to_be_deleted_from_address:
-                add = add.replace(phrase, " ")
+                add = re.sub(phrase, " ", add, flags=re.IGNORECASE)
             filtered_add_list.append(add)
         temp_list = [add for add in filtered_add_list]
         filtered_add_list = []
-        # extracing CEP number and spliting on ','
+
         for add in temp_list:
-            add = re.sub("-|–|/|,|\.|\|", " ", add)
-            add = (re.sub("\s{2,}", " ", add)).strip()
+            add = re.sub("-|–|/|,|\|\(\)", " ", add)
+            add = re.sub("\s{2,}", " ", add).strip()
             add = add.split(" ")
             filtered_add_list.append(add)
         
@@ -126,7 +162,7 @@ def get_indian_unique_addresses(address_list):
                 m = re.search(number_founder_pattern, word)
                 if(m):
                     word_list.append(m.group(1))
-                    word = re.sub(m.group(0), " ", word)
+                    word = re.sub(m.group(1), " ", word)
                 word = (re.sub("\s{2,}", " ", word)).strip()
                 if(not word.endswith(".")):
                     if(len(word) >= 2):
@@ -176,28 +212,40 @@ def get_indian_unique_addresses(address_list):
     else:
         return address_list
 
-def get_indian_address_parts(address, language="pt"):
+def get_indian_address_parts(address, language="en"):
     temp = address
     parts = {
-        "country":"",
+        "country":"india",
         "state":"",
         "city":"",
         "postal-code":"",
         "street-address":"",
     }
 
-    address = re.sub("brasil", " ", address, flags=re.IGNORECASE)
+    address = re.sub("[\-\.\s\|/–]*india[\-\.\s\|/–]*", "", address, flags=re.IGNORECASE)
+    m = re.search("((?<!\d)\d{3}[\s\-\.]?\d{3}(?!\d))", address)
+    if(m):
+        parts["postal-code"] = m.group(0)
+        address = re.sub("[\-\.\s\|/–]*" + m.group(0) + "[\-\.\s\|/–]*", "", address)
 
-    address = re.sub("-|–|/|\|", ",", address)
     address = re.sub("\s{2,}", " ", address)
     address = address.split(",")
-    address = [part.strip() for part in address if part.strip() != ""]
+    address = [part.strip() for part in address if sum(1 for m in re.finditer("\w", part)) > 0]
 
-    state = is_brazilian_state(address[-1])
-    if("some condition"):
-        # do it
-        pass
-    else:
+    if(len(address) >= 3):
+        for k in india_states.keys():
+            if(re.search(india_states[k], address[-1])):
+                parts["state"] = india_states[k]
+                break
+            elif(re.search(k, address[-1])):
+                parts["state"] = india_states[k]
+                break
+        
+        if(parts["state"]):
+            parts["city"] = address[-2]
+            parts["street-address"] = ", ".join(i for i in address[:len(address) - 2])
+
+    if(len(address) < 3 or not parts["state"]):
         print("Splitting not successfull. Using google ...")
         # using google API to find formatted address
         address_dic = get_google_formatted_address_using_address(temp, language)
@@ -218,7 +266,7 @@ def purify_indian_addresses(address_list):
             rechecked_addresses.append(new_add)
     rechecked_addresses = list(set(rechecked_addresses))
     unique_addresses = get_indian_unique_addresses(rechecked_addresses)
-
+    
     splitted_addresses = []
     for add in unique_addresses:
         splitted_addresses.append(get_indian_address_parts(add))
@@ -230,8 +278,8 @@ def find_indian_phones(text, patterns):
     for pattern in patterns:
         items = re.findall(pattern, text)
         for item in items:
-            phone = item[0]
-            if(len(phone) >= 12 and "\n" not in phone):
+            phone = item
+            if(len(phone) >= 11 and "\n" not in phone):
                 phones.append(phone)
     return list(set(phones))
 

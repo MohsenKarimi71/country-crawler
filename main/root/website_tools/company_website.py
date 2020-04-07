@@ -104,7 +104,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
 
     if(contact_page_soup):
         text = "\n".join(string for string in contact_page_soup.stripped_strings)
-        website_data["addresses"] = find_addresses(text[:20000], country_context["address_patterns"], country)
+        website_data["addresses"] = find_addresses(text[:20000], country_context["address_patterns"], country, is_contact_page=True)
         google_pin_address = get_google_pin_address(contact_page_soup, url, language)
         website_data["addresses"] += google_pin_address
 
@@ -133,6 +133,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
     
     if(website_data["phones"]):
         website_data["phones"] = purify_phones(website_data["phones"], country)
+    
     if(website_data["emails"]):
         website_data["emails"] = purify_emails(website_data["emails"])
 

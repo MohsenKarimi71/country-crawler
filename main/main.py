@@ -1,6 +1,6 @@
-from unit_test_tools.india.functions import test_address_regex_india, test_recheak_address_india, test_find_indian_addresses
+from unit_test_tools.india.functions import test_address_regex_india, test_recheak_address_india, test_find_indian_addresses, test_find_indian_phones, test_get_indian_address_parts
 from root.general_tools.tools import getHtmlResponse, getSoup, load_country_context
-from root.website_tools.company_website import find_second_page_url
+from root.website_tools.company_website import find_second_page_url, website_info
 
 import os
 import json
@@ -67,7 +67,7 @@ def run_test_address_regex_india_by_domain(domain):
         url = "http://" + domain
         print("\nLooking in domain main page...")
         print("url: ", url)
-        res = getHtmlResponse(url)
+        res = getHtmlResponse(url, use_proxy=False)
         if(res):
             soup = getSoup(res)
             if(soup):
@@ -77,7 +77,7 @@ def run_test_address_regex_india_by_domain(domain):
                 if(result):
                     print(len(result), " item found:")
                     for item in result:
-                        print(item[0],"\n")
+                        print(">>> ", item[0], " <<<\n")
                 else:
                     print("no item found.")
                 
@@ -103,12 +103,13 @@ def run_test_address_regex_india_by_domain(domain):
                     
                     if(contact_page_soup):
                         text = "\n".join(string for string in contact_page_soup.stripped_strings)
+                        #print(text)
                         #print("\n", text, "\n")
                         result = test_address_regex_india(text, context)
                         if(result):
                             print(len(result), " item found:")
                             for item in result:
-                                print(item[0], "\n")
+                                print(">>> ", item[0], " <<<\n")
                         else:
                             print("no item found.")
                     else:
@@ -124,6 +125,13 @@ def run_test_address_regex_india_by_domain(domain):
     print(50 * "*")
 
 #run_test_address_regex_india_by_domain("novatechprojects.com")
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "india", "samples.json"), mode="r", encoding="utf-8").read())
+for dic in samples[376:385]:
+    domain = dic["Website"]
+    run_test_address_regex_india_by_domain(domain)
+    print(80 * "#")
+'''
 #************************************************************************#
 
 def run_test_address_regex_india_by_text(text):
@@ -143,15 +151,7 @@ def run_test_address_regex_india_by_text(text):
 #    #print("Address: ", dic["address"])
 #    run_test_address_regex_india_by_text(dic["address"])
 
-t = '''
-Kailash, New Delhi – 110065
-Mumbai:
-Balarama Building, 6
-th
-Floor, #608 E- Block, BKC Road, Near Family Court, Bandra East – Mumbai, Maharashtra – 400051
-Hyderabad:
-Awfis, 5
-'''
+t = ''''''
 #run_test_address_regex_india_by_text(t)
 #************************************************************************#
 
@@ -177,7 +177,7 @@ def run_test_find_indian_addresses_by_domain(domain):
     if(texts["main_page_text"]):
         domain_data = test_find_indian_addresses(texts["main_page_text"], context)
         if(texts["contact_page_text"]):
-            domain_data.extend(test_find_indian_addresses(texts["contact_page_text"], context))
+            domain_data.extend(test_find_indian_addresses(texts["contact_page_text"], context, is_contact_page=True))
         else:
             print("no contact page text for domain: ", domain)
     else:
@@ -185,18 +185,113 @@ def run_test_find_indian_addresses_by_domain(domain):
     
     return domain_data
 
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "india", "samples.json"), mode="r", encoding="utf-8").read())
+all_data = []
+for dic in samples[450:600]:
+    domain = dic["Website"]
+    found_addresses = run_test_find_indian_addresses_by_domain(domain)
+    #checked_addresses = []
+    #for add in found_addresses:
+    #    checked_addresses.append({"pure": add, "checked": test_recheak_address_india(add)})
+
+    #all_data.append({"domain": domain, "addresses": checked_addresses})
+    all_data.append({"domain": domain, "addresses": found_addresses})
+    with open(os.path.join(dir_path, "output", "india", "address_only_output4.json"), mode="w", encoding="utf-8") as outfile:
+        outfile.write(json.dumps(all_data, indent=4, ensure_ascii=False))
+    print(80 * "#")
+'''
+'''
+found_addresses = run_test_find_indian_addresses_by_domain("www.murugappa.com")
+for add in found_addresses:
+    res = test_recheak_address_india(add)
+    print("add >>> ", add)
+    print("res >>> ", res, "\n")
+'''
+
+
+#************************************************************************#
+
+def run_test_find_indian_addresses_phones_by_domain(domain):
+    texts = get_domain_contact_page_text(domain)
+    context = load_country_context(country="india", add_with_global_setting=False)
+    domain_data = {"addresses": [], "phones": []}
+    
+    if(texts["main_page_text"]):
+        domain_data["addresses"] = test_find_indian_addresses(texts["main_page_text"], context)
+        domain_data["phones"] = test_find_indian_phones(texts["main_page_text"], context)
+        if(texts["contact_page_text"]):
+            domain_data["addresses"].extend(test_find_indian_addresses(texts["contact_page_text"], context))
+            domain_data["phones"].extend(test_find_indian_phones(texts["contact_page_text"], context))
+        else:
+            print("no contact page text for domain: ", domain)
+    else:
+        print("no main page text for domain: ", domain)
+    
+    return domain_data
+
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "india", "samples.json"), mode="r", encoding="utf-8").read())
+all_data = []
+for dic in samples[450:600]:
+    domain = dic["Website"]
+    data = run_test_find_indian_addresses_phones_by_domain(domain)
+    checked_addresses = []
+    for add in data["addresses"]:
+        checked_addresses.append({"pure": add, "checked": test_recheak_address_india(add)})
+
+    all_data.append({"domain": domain, "addresses": checked_addresses, "phones": data["phones"]})
+    with open(os.path.join(dir_path, "output", "india", "address_phone_out_put.json"), mode="w", encoding="utf-8") as outfile:
+        outfile.write(json.dumps(all_data, indent=4, ensure_ascii=False))
+    print(80 * "#")
+'''
+#************************************************************************#
+def run_company_website_function(domain, org_name, language, country):
+    return website_info(domain, org_name, language, country)
+
 
 samples = json.loads(open(os.path.join(dir_path, "samples", "india", "samples.json"), mode="r", encoding="utf-8").read())
 all_data = []
-for dic in samples[350:450]:
+for dic in samples[732:1100]:
     domain = dic["Website"]
-    found_addresses = run_test_find_indian_addresses_by_domain(domain)
-    checked_addresses = []
-    for add in found_addresses:
-        checked_addresses.append({"pure": add, "checked": test_recheak_address_india(add)})
+    org_name = dic["Organization Name"]
 
-    all_data.append({"domain": domain, "addresses": checked_addresses})
-    with open(os.path.join(dir_path, "output", "india", "address_only_out_put.json"), mode="w", encoding="utf-8") as outfile:
+    data = run_company_website_function(domain, org_name, "en", "india")
+    all_data.append(data)
+
+    with open(os.path.join(dir_path, "output", "india", "final_output2.json"), mode="w", encoding="utf-8") as outfile:
         outfile.write(json.dumps(all_data, indent=4, ensure_ascii=False))
     print(80 * "#")
+
+
+#data = run_company_website_function("www.archimedes.in", "Dinsignia Architects", "en", "india")
+#print(data)
+
+#data = run_company_website_function("www.dinsignia.com", "Dinsignia Architects", "en", "india")
+#print(data)www.archimedes.in
+#************************************************************************#
+def run_test_get_indian_address_parts(address):
+    print(test_get_indian_address_parts(address))
+'''
+samples = json.loads(open(os.path.join(dir_path, "output", "india", "found_addresses.json"), mode="r", encoding="utf-8").read())
+for add in samples[10:20]:
+    print(add)
+    run_test_get_indian_address_parts(add)
+    print(80 * "*")
+'''
+#************************************************************************#
+
 ###############################################################################################################################################
+
+'''
+adds = []
+data = json.loads(open(os.path.join(dir_path, "output", "india", "complate_output.json"), mode="r", encoding="utf-8").read())
+for dic in data:
+    if(dic["result"]):
+        if(dic["result"]["addresses"]):
+            for add in dic["result"]["addresses"]:
+                adds.append(add)
+
+with open(os.path.join(dir_path, "output", "india", "found_addresses.json"), mode="w", encoding="utf-8") as infile:
+    infile.write(json.dumps(adds, indent=4, ensure_ascii=False))
+'''
