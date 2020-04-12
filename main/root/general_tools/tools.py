@@ -27,6 +27,7 @@ translator = Translator()
 COUNTRY_CONTEXTS = {
     "countries": {
         "usa": {
+            "phone_prefix": "1",
             "phone_phrases": [],
             "phone_patterns": ["\\+?\\d?[-\\.]?\\d{3}.\\d{3}.\\d{4}"],
             "address_patterns": ["address:.+", "Address:.+"],
@@ -43,6 +44,7 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["contact", "contacto", "contacts", "contact us"]
         },
         "brazil": {
+            "phone_prefix": "55",
             "phone_phrases": ["telefone:", "fone:", "Fone:", "Telefone:"],
             "phone_patterns": [
                 "(\+?(\d{2}\s)?\(?\d{2,3}\)?(\)|\s|-|\.)\s?(-|\.)?\s?\d{2,3}\s?(-|\.)?\s?\d{2}(\s|-|\.)\s?(-|\.)?\s?\d{2}\s?(-|\.)?\s?\d{2})",
@@ -78,12 +80,14 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["contato", "Fale Conosco", "Contatos"]
         },
         "china": {
+            "phone_prefix": "86",
             "phone_phrases": ["电话"],
             "phone_patterns": [],
             "address_patterns": ["地址"],
             "contact_text": ["联系方式", "联系我们"]
         },
         "russia": {
+            "phone_prefix": "7",
             "phone_phrases": ["Телефон"],
             "phone_patterns": [
                 "(?<!\d)(\+?\s?\d?[\-\.\s]*\(?\s?\d{3}[\)\-\.\s]+\d{3}[\-\.\s]*\d{2}[\-\.\s]*\d{2})(?!\d)",
@@ -131,6 +135,7 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["КОНТАКТЫ", "Контакты", "contact"]
         },
         "india": {
+            "phone_prefix": "91",
             "phone_phrases": [],
             "phone_patterns": [
                     "(?<!\d)\(?\+?\d{2}\)?[\s\-\.–]{1,3}\d{3}[\s\-\.–]{1,3}\d{8}",
@@ -179,12 +184,14 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["contact", "contact us"]
         },
         "poland": {
+            "phone_prefix": "48",
             "phone_phrases": [],
             "phone_patterns": ["\d{2}[\s\-]\d{3}[\s\-]\d{2}[\s\-]\d{2}"],
             "address_patterns": [],
             "contact_text": ["Skontaktuj", "Skontaktuj się z nami"]
         },
         "spain": {
+            "phone_prefix": "34",
             "phone_phrases": [],
             "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})",
                                "(\+\d{2}[\s\-]\(?\d{2,3}\)[\s\-]\d{3,4}[\s\-]\d{3,4})",
@@ -193,18 +200,21 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["contacta"]
         },
         "colombia": {
+            "phone_prefix": "57",
             "phone_phrases": ["Teléfono"],
             "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})", "\(\+?\d+\)\s?\(\d+\)\s\d{3}[\s\-]?\d{,4}"],
             "address_patterns": ["Av[\.]?\s.+","Dirección:\s.+", "Calle[\s].+"],
             "contact_text": ["contactenos"]
         },
         "uae": {
+            "phone_prefix": "971",
             "phone_phrases": [],
             "phone_patterns": ["\+\d{3}\s\d\s\d{7}", "\d{2,3}[\s\-]\d{7}", "\+\d{3}\s\d\s\d{2}\s\d{2}\s\d{3}", "\+?\d{2,3}[\s\-]\d[\s\-]\d{3,4}[\s\-]\d{3,4}"],
             "address_patterns": ["Av[\.]?\s.+","Dirección:\s.+", "Calle[\s].+"],
             "contact_text": ["contactenos"]
         },
         "vietnam": {
+            "phone_prefix": "84",
             "phone_phrases": [],
             "phone_patterns": [
                 "((?<!\d)\(?\+?\d{2}[\s\.\-]+\d{3}\)?([\s\.\-]*\d){8}(?!\d))",
@@ -313,6 +323,7 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["Liên hệ", "CONTACT US", "contact"]
         },
         "mexico": {
+            "phone_prefix": "52",
             "phone_phrases": [],
             "phone_patterns": [
                 "(\+?\d{2}\s?[\.\-]?\s?\(?\d{2}\)?\s?[\.\-]?\s?\d{4}\s?[\.\-]?\s?\d{4})",
@@ -904,6 +915,34 @@ def purify_emails(original_email_list, composite_mode=False):
     else:
         return original_email_list
 
+def purify_phones_global(original_phone_list, composite_mode=False):
+    if(len(original_phone_list) > 1):
+        unique_phones = []
+        filtered_list = []
+        # adding phones to filtered_list
+        if(composite_mode):
+            for dic in original_phone_list:
+                t = re.sub("\D", "", dic["phone"])
+                filtered_list.append(t[-10:])
+        else:
+            for phone in original_phone_list:
+                t = re.sub("\D", "", phone)
+                filtered_list.append(t[-10:])
+
+        unique_phones.append({"original": original_phone_list[0], "filtered":filtered_list[0]})
+        for i in range(1, len(original_phone_list)):
+            is_unique = True
+            for dic in unique_phones:
+                if(filtered_list[i] == dic["filtered"]):
+                    is_unique = False
+                    break
+            if(is_unique):
+                unique_phones.append({"original": original_phone_list[i], "filtered":filtered_list[i]})
+
+        return [dic["original"] for dic in unique_phones]
+    else:
+        return original_phone_list
+
 def get_unique_social_media_links(original_social_links_list, composite_mode=True):
     if(len(original_social_links_list) > 1):
         original_unique_socials = []
@@ -927,11 +966,14 @@ def get_unique_social_media_links(original_social_links_list, composite_mode=Tru
     else:
         return original_social_links_list
 
-
 def get_unique_addresses_for_composite_data(original_address_list, country):
     if(country == "russia"):
         from root.country_tools.russia.tools import get_russian_unique_addresses
         unique_function = get_russian_unique_addresses
+    
+    elif(country == "china"):
+        from root.country_tools.china.tools import get_chinese_unique_addresses
+        unique_function = get_chinese_unique_addresses
 
     if(len(original_address_list) >= 2):
         uniques = []
@@ -944,10 +986,10 @@ def get_unique_addresses_for_composite_data(original_address_list, country):
                 result = unique_function([original_add, unique_add], composite_mode=True)
                 if(len(result) == 1):
                     is_unique = False
-                    if(unique_add["source"] != "country-module"):
-                        if(original_add["source"] == "country-module"):
+                    if(unique_add["source"] != "company-website"):
+                        if(original_add["source"] == "company-website"):
                             uniques[j] = original_add
-                        elif(original_add["source"] == "company-website" and unique_add["source"] != "company-website"):
+                        elif(original_add["source"] == "country-module" and unique_add["source"] != "country-module"):
                             uniques[j] = original_add
                     break
             if(is_unique):
@@ -957,11 +999,7 @@ def get_unique_addresses_for_composite_data(original_address_list, country):
     else:
         return original_address_list 
 
-def get_unique_phones_for_composite_data(original_phone_list, country):
-    if(country == "russia"):
-        from root.country_tools.russia.tools import purify_russian_phones
-        unique_function = purify_russian_phones
-
+def get_unique_phones_for_composite_data(original_phone_list):
     if(len(original_phone_list) >= 2):
         uniques = []
         uniques.append(original_phone_list[0])
@@ -970,13 +1008,13 @@ def get_unique_phones_for_composite_data(original_phone_list, country):
         for i, original_phone in enumerate(original_phone_list):
             is_unique = True
             for j, unique_phone in enumerate(uniques):
-                result = unique_function([original_phone, unique_phone], composite_mode=True)
+                result = purify_phones_global([original_phone, unique_phone], composite_mode=True)
                 if(len(result) == 1):
                     is_unique = False
-                    if(unique_phone["source"] != "country-module"):
-                        if(original_phone["source"] == "country-module"):
+                    if(unique_phone["source"] != "company-website"):
+                        if(original_phone["source"] == "company-website"):
                             uniques[j] = original_phone
-                        elif(original_phone["source"] == "company-website" and unique_phone["source"] != "company-website"):
+                        elif(original_phone["source"] == "country-module" and unique_phone["source"] != "country-module"):
                             uniques[j] = original_phone
                     break
             if(is_unique):
@@ -1010,298 +1048,6 @@ def get_unique_emails_for_composite_data(original_email_list):
 
     else:
         return original_email_list 
-
-
-def json2composite(json_obj, country):
-    all_addresses = []
-    all_phones = []
-    all_emails = []
-    all_facebook_links = []
-    all_instagram_links = []
-    all_linkedin_links = []
-    all_twitter_links = []
-    all_youtube_links = []
-
-    out_json = { 
-        "composite": {
-            "website-title": "",
-            "addresses": [],
-            "emails": [],
-            "telephones": [],
-            "social_media_links": {},
-            "company-description": [],
-            "company-name": [],
-            "logo": []
-        },
-        "input_data": json_obj["input_data"],
-        "matched_data": []
-    }
-
-    # getting website data
-    if(json_obj.get("website_data")):
-        web_data = json_obj["website_data"]["result"]
-        out_json["matched_data"].append({"company-website": web_data})
-        if(web_data.get("web_title")):
-            
-            out_json["composite"]["website-title"] = {"source":"company-website", "data": web_data["web_title"]}
-        
-        if(web_data.get("phones")):
-            for phone in web_data["phones"]:
-                all_phones.append({"source": "company-website", "phone": phone})
-        
-        if(web_data.get("emails")):
-            for email in web_data["emails"]:
-                all_emails.append({"source": "company-website", "email": email})
-
-        if(web_data.get("addresses")):
-            for dic_address in web_data["addresses"]:
-                all_addresses.append(dic_address)
-
-        if(web_data.get("social_pages")):
-            social_pages = web_data["social_pages"]
-
-            if(social_pages.get("facebook")):
-                all_facebook_links.append({"source":"company-website", "url": social_pages["facebook"]})
-
-            if(social_pages.get("instagram")):
-                all_instagram_links.append({"source":"company-website", "url": social_pages["instagram"]})
-
-            if(social_pages.get("linkedin")):
-                all_linkedin_links.append({"source":"company-website", "url": social_pages["linkedin"]})
-
-            if(social_pages.get("twitter")):
-                all_twitter_links.append({"source":"company-website", "url": social_pages["twitter"]})
-            
-            if(social_pages.get("youtube")):
-                all_youtube_links.append({"source":"company-website", "url": social_pages["youtube"]})
-
-        if(web_data.get("logo_url")):
-            out_json["composite"]["logo"].append({"source": "company-website", "data": {"url": web_data["logo_url"], "path": None}})
-
-    # getting google data
-    if(json_obj.get("google_data")):
-        google_data = json_obj["google_data"]
-        out_json["matched_data"].append({"google": google_data})
-
-        if(google_data.get("emails")):
-            for email in google_data["emails"]:
-                all_emails.append({"source": "google", "email": email})
-
-        if(google_data.get("social_pages")):
-            social_pages = google_data["social_pages"]
-
-            if(social_pages.get("facebook")):
-                all_facebook_links.append({"source":"google", "url": social_pages["facebook"]})
-
-            if(social_pages.get("instagram")):
-                for item in social_pages["instagram"]:
-                    all_instagram_links.append({"source":"google", "url": item})
-
-            if(social_pages.get("linkedin")):
-                for item in social_pages["linkedin"]:
-                    all_linkedin_links.append({"source":"google", "url": item})
-
-            if(social_pages.get("twitter")):
-                for item in social_pages["twitter"]:
-                    all_twitter_links.append({"source":"google", "url": item})
-            
-            if(social_pages.get("youtube")):
-                for item in social_pages["youtube"]:
-                    all_youtube_links.append({"source":"google", "url": item})
-
-        if(google_data["google_map_address"].get("address")):
-            for address in google_data["google_map_address"]["address"]:
-                all_addresses.append({"source":"google", "address": address})
-
-    # getting facebook data
-    if(json_obj.get("facebook_data")):
-        facebook_data = json_obj["facebook_data"]
-        out_json["matched_data"].append({"facebook": facebook_data})
-
-        for dic in facebook_data:
-            if(dic.get("address")):
-                all_addresses.append({"source":"facebook", "address": dic["address"]})
-
-            if(dic.get("phone")):
-                all_phones.append({"source":"facebook", "phone": dic["phone"]})
-
-            if(dic.get("email")):
-                for email in dic["email"]:
-                    all_emails.append({"source":"facebook", "email": email})
-            
-            if(dic.get("saved_logo")):
-                out_json["composite"]["logo"].append({"source":"facebook", "data": {"url": dic["saved_logo"], "path": None}})
-
-            
-            if(dic.get("more_info")):
-                out_json["composite"]["company-description"].append({"source":"facebook", "data": dic["more_info"]})
-
-    # getting whois data
-    if(json_obj.get("whois")):
-        whois_data = json_obj["whois"]
-        out_json["matched_data"].append({"whois": whois_data})
-
-        if(whois_data.get("organization")):
-            out_json["composite"]["company-name"].append({"source": "whois", "data": whois_data["organization"]})
-
-        if(whois_data.get("email")):
-            all_emails.append({"source": "whois", "email": whois_data["email"]})
-    
-    # getting info-box data
-    if(json_obj.get("infobox_info")):
-        info_box_data = json_obj["infobox_info"]
-        out_json["matched_data"].append({"info-box": info_box_data})
-        
-        if(info_box_data.get("address")):
-            all_addresses.append({"source": "info-box", "address": info_box_data["address"]})
-
-        if(info_box_data.get("phone")):
-            all_phones.append({"source": "info-box", "phone": info_box_data["phone"]})
-
-    # getting country_module data
-    if(json_obj["country_module"].get("result")):
-        country_module_data = json_obj["country_module"]["result"]
-
-        if(country == "russia"):
-            out_json["matched_data"].append({"country-module": country_module_data})
-            from root.country_tools.russia.tools import get_russian_country_module_composite_data
-            composite_data_extention = get_russian_country_module_composite_data(country_module_data)
-            if(composite_data_extention):
-                for key in composite_data_extention.keys():
-                    if(key == "company-description"):
-                        out_json["composite"]["company-description"].append(composite_data_extention["company-description"])
-
-                    elif(key == "company-name"):
-                        out_json["composite"]["company-name"].append(composite_data_extention["company-name"])
-
-                    elif(key == "addresses"):
-                        all_addresses.extend(composite_data_extention["addresses"])
-
-                    elif(key == "telephones"):
-                        all_phones.extend(composite_data_extention["telephones"])
-
-                    elif(key == "emails"):
-                        all_emails.extend(composite_data_extention["emails"])
-        
-        elif(country == "china"):
-            from root.country_tools.china.tools import select_dictionary_for_composite_data, get_chinese_country_module_composite_data
-            
-            domain = json_obj["input_data"]["domain"]
-            selected_country_module_data = select_dictionary_for_composite_data(country_module_data, domain)
-
-            composite_data_extention = get_chinese_country_module_composite_data(selected_country_module_data)
-            if(composite_data_extention):
-                for key in composite_data_extention.keys():
-                    if(key == "company-description"):
-                        out_json["composite"]["company-description"].append(composite_data_extention["company-description"])
-
-                    elif(key == "logo"):
-                        out_json["composite"]["logo"].append(composite_data_extention["logo"])
-
-                    elif(key == "company-name"):
-                        out_json["composite"]["company-name"].extend(composite_data_extention["company-name"])
-
-                    elif(key == "addresses"):
-                        all_addresses.extend(composite_data_extention["addresses"])
-
-                    elif(key == "telephones"):
-                        all_phones.extend(composite_data_extention["telephones"])
-
-                    elif(key == "emails"):
-                        all_emails.extend(composite_data_extention["emails"])
-                        
-    # getting unique data from sorted data and finding vk_link
-    if(country == "russia"):
-        from root.country_tools.russia.tools import get_russian_address_parts
-
-        # translating addresses to russian
-        for index, dic in enumerate(all_addresses):
-            if(dic["source"] in ["google", "facebook", "info-box"]):
-                try:
-                    translated = translator.translate(dic["address"], src="en", dest="ru").text
-                    all_addresses[index]["address"] = translated
-                except:
-                    pass
-
-        unique_addresses = get_unique_addresses_for_composite_data(all_addresses, country)
-
-        # getting components of addresses that do not have this part (addresses from 'google', 'facebook', and 'info-box')
-        for index, dic in enumerate(unique_addresses):
-            if(not dic.get("components")):
-                unique_addresses[index] = get_russian_address_parts(dic["address"], dic["source"], language="ru")
-
-        unique_phones = get_unique_phones_for_composite_data(all_phones, country)
-
-        # finding vk_link
-        from root.country_tools.russia.tools import find_VK_link
-        vk_kink = find_VK_link(json_obj["input_data"]["domain"])
-        if(vk_kink):
-            out_json["composite"]["social_media_links"]["VK"] = [{"source": "google", "url":vk_kink}]
-        else:
-            out_json["composite"]["social_media_links"]["VK"] = []
-
-    else:
-        unique_addresses = all_addresses
-        unique_phones = all_phones
-    
-    unique_emails = get_unique_emails_for_composite_data(all_emails)
-
-    unique_facebook_links = get_unique_social_media_links(all_facebook_links, composite_mode=True)
-    unique_instagram_links = get_unique_social_media_links(all_instagram_links, composite_mode=True)
-    unique_linkedin_links = get_unique_social_media_links(all_linkedin_links, composite_mode=True)
-    unique_twitter_links = get_unique_social_media_links(all_twitter_links, composite_mode=True)
-    unique_youtube_links = get_unique_social_media_links(all_youtube_links, composite_mode=True)
-
-    if(len(unique_addresses) > MAX_COMPOSITE_ADDRESSES):
-        selected = [item for item in unique_addresses if item["source"]=="country-module"]
-        for item in unique_addresses:
-            if(item["source"] == "company-website"):
-                selected.append(item)
-        if(len(selected) < MAX_COMPOSITE_ADDRESSES):
-            for item in unique_addresses:
-                if(not item["source"] in ["company-website", "country-module"]):
-                    selected.append(item)
-        
-        out_json["composite"]["addresses"] = selected[:MAX_COMPOSITE_ADDRESSES]
-    else:
-        out_json["composite"]["addresses"] = unique_addresses[:MAX_COMPOSITE_ADDRESSES]
-    
-    if(len(unique_emails) > MAX_COMPOSITE_EMAILS):
-        selected = [item for item in unique_emails if item["source"]=="country-module"]
-        for item in unique_emails:
-            if(item["source"] == "company-website"):
-                selected.append(item)
-        if(len(selected) < MAX_COMPOSITE_EMAILS):
-            for item in unique_emails:
-                if(not item["source"] in ["company-website", "country-module"]):
-                    selected.append(item)
-        
-        out_json["composite"]["emails"] = selected[:MAX_COMPOSITE_EMAILS]
-    else:
-        out_json["composite"]["emails"] = unique_emails[:MAX_COMPOSITE_EMAILS]
-    
-    if(len(unique_phones) > MAX_COMPOSITE_PHONES):
-        selected = [item for item in unique_phones if item["source"]=="country-module"]
-        for item in unique_phones:
-            if(item["source"] == "company-website"):
-                selected.append(item)
-        if(len(selected) < MAX_COMPOSITE_PHONES):
-            for item in unique_phones:
-                if(not item["source"] in ["company-website", "country-module"]):
-                    selected.append(item)
-        
-        out_json["composite"]["telephones"] = selected[:MAX_COMPOSITE_PHONES]
-    else:
-        out_json["composite"]["telephones"] = unique_phones[:MAX_COMPOSITE_PHONES]
-    
-    out_json["composite"]["social_media_links"]["facebook"] = unique_facebook_links[:MAX_COMPOSITE_FACEBOOK_LINKS]
-    out_json["composite"]["social_media_links"]["instagram"] = unique_instagram_links[:MAX_COMPOSITE_INSTAGRAM_LINKS]
-    out_json["composite"]["social_media_links"]["linkedin"] = unique_linkedin_links[:MAX_COMPOSITE_LINKEDIN_LINKS]
-    out_json["composite"]["social_media_links"]["twitter"] = unique_twitter_links[:MAX_COMPOSITE_TWITTER_LINKS]
-    out_json["composite"]["social_media_links"]["youtube"] = unique_youtube_links[:MAX_COMPOSITE_YOUTUBE_LINKS]
-
-    return {"result": out_json}
-
 
 def find_addresses(text, patterns, country, is_contact_page=False):
     addresses = []
@@ -1399,3 +1145,227 @@ def purify_phones(phone_list, country):
         purified_phones = purify_indian_phones(phone_list)
 
     return purified_phones
+
+
+def get_country_module_composite_data(country_module_data, composite_data, country):
+    if(country == "russia"):
+        from root.country_tools.russia.tools import get_russian_country_module_composite_data
+        composite_data = get_russian_country_module_composite_data(country_module_data, composite_data)
+  
+    elif(country == "china"):
+        from root.country_tools.china.tools import pick_matched_case_for_composite, get_chinese_country_module_composite_data
+
+        selected_data = pick_matched_case_for_composite(country_module_data, composite_data["input_data"]["domain"])
+        composite_data = get_chinese_country_module_composite_data(selected_data, composite_data)
+    
+    return composite_data
+
+
+def purify_composite_data(composite_data):
+    composite_data["composite"]["telephones"] = get_unique_phones_for_composite_data(composite_data["composite"]["telephones"])
+    composite_data["composite"]["emails"] = get_unique_emails_for_composite_data(composite_data["composite"]["emails"])
+
+    composite_data["composite"]["social_media_links"]["facebook"] = get_unique_social_media_links(composite_data["composite"]["social_media_links"]["facebook"], composite_mode=True)[:MAX_COMPOSITE_FACEBOOK_LINKS]
+    composite_data["composite"]["social_media_links"]["instagram"] = get_unique_social_media_links(composite_data["composite"]["social_media_links"]["instagram"], composite_mode=True)[:MAX_COMPOSITE_INSTAGRAM_LINKS]
+    composite_data["composite"]["social_media_links"]["linkedin"] = get_unique_social_media_links(composite_data["composite"]["social_media_links"]["linkedin"], composite_mode=True)[:MAX_COMPOSITE_LINKEDIN_LINKS]
+    composite_data["composite"]["social_media_links"]["twitter"] = get_unique_social_media_links(composite_data["composite"]["social_media_links"]["twitter"], composite_mode=True)[:MAX_COMPOSITE_TWITTER_LINKS]
+    composite_data["composite"]["social_media_links"]["youtube"] = get_unique_social_media_links(composite_data["composite"]["social_media_links"]["youtube"], composite_mode=True)[:MAX_COMPOSITE_YOUTUBE_LINKS]
+
+    if(len(composite_data["composite"]["addresses"]) > MAX_COMPOSITE_ADDRESSES):
+        selected = [item for item in composite_data["composite"]["addresses"] if item["source"]=="company-website"]
+        for item in composite_data["composite"]["addresses"]:
+            if(item["source"] == "country-module"):
+                selected.append(item)
+        if(len(selected) < MAX_COMPOSITE_ADDRESSES):
+            for item in composite_data["composite"]["addresses"]:
+                if(not item["source"] in ["company-website", "country-module"]):
+                    selected.append(item)
+        
+        composite_data["composite"]["addresses"] = selected[:MAX_COMPOSITE_ADDRESSES]
+    else:
+        composite_data["composite"]["addresses"] = composite_data["composite"]["addresses"][:MAX_COMPOSITE_ADDRESSES]
+    
+    if(len(composite_data["composite"]["emails"]) > MAX_COMPOSITE_EMAILS):
+        selected = [item for item in composite_data["composite"]["emails"] if item["source"]=="company-website"]
+        for item in composite_data["composite"]["emails"]:
+            if(item["source"] == "country-module"):
+                selected.append(item)
+        if(len(selected) < MAX_COMPOSITE_EMAILS):
+            for item in composite_data["composite"]["emails"]:
+                if(not item["source"] in ["company-website", "country-module"]):
+                    selected.append(item)
+        
+        composite_data["composite"]["emails"] = selected[:MAX_COMPOSITE_EMAILS]
+    else:
+        composite_data["composite"]["emails"] = composite_data["composite"]["emails"][:MAX_COMPOSITE_EMAILS]
+    
+    if(len(composite_data["composite"]["telephones"]) > MAX_COMPOSITE_PHONES):
+        selected = [item for item in composite_data["composite"]["telephones"] if item["source"]=="company-website"]
+        for item in composite_data["composite"]["telephones"]:
+            if(item["source"] == "country-module"):
+                selected.append(item)
+        if(len(selected) < MAX_COMPOSITE_PHONES):
+            for item in composite_data["composite"]["telephones"]:
+                if(not item["source"] in ["company-website", "country-module"]):
+                    selected.append(item)
+        
+        composite_data["composite"]["telephones"] = selected[:MAX_COMPOSITE_PHONES]
+    else:
+        composite_data["composite"]["telephones"] = composite_data["composite"]["telephones"][:MAX_COMPOSITE_PHONES]
+    
+    return composite_data
+
+
+def json2composite(json_obj, country):
+    out_json = { 
+        "composite": {
+            "website-title": "",
+            "addresses": [],
+            "emails": [],
+            "telephones": [],
+            "social_media_links": {
+                "facebook": [],
+                "instagram": [],
+                "linkedin": [],
+                "twitter": [],
+                "youtube": [],
+            },
+            "company-description": [],
+            "company-name": [],
+            "logo": []
+        },
+        "input_data": json_obj["input_data"],
+        "matched_data": []
+    }
+
+    # getting website data
+    if(json_obj.get("website_data")):
+        web_data = json_obj["website_data"]["result"]
+        out_json["matched_data"].append({"company-website": web_data})
+        if(web_data.get("web_title")):
+            
+            out_json["composite"]["website-title"] = {"source":"company-website", "data": web_data["web_title"]}
+        
+        if(web_data.get("phones")):
+            for phone in web_data["phones"]:
+                out_json["composite"]["telephones"].append({"source": "company-website", "phone": phone})
+        
+        if(web_data.get("emails")):
+            for email in web_data["emails"]:
+                out_json["composite"]["emails"].append({"source": "company-website", "email": email})
+
+        if(web_data.get("addresses")):
+            for dic_address in web_data["addresses"]:
+                out_json["composite"]["addresses"].append(dic_address)
+
+        if(web_data.get("social_pages")):
+            social_pages = web_data["social_pages"]
+
+            if(social_pages.get("facebook")):
+                out_json["composite"]["social_media_links"]["facebook"].append({"source":"company-website", "url": social_pages["facebook"]})
+
+            if(social_pages.get("instagram")):
+                out_json["composite"]["social_media_links"]["instagram"].append({"source":"company-website", "url": social_pages["instagram"]})
+
+            if(social_pages.get("linkedin")):
+                out_json["composite"]["social_media_links"]["linkedin"].append({"source":"company-website", "url": social_pages["linkedin"]})
+
+            if(social_pages.get("twitter")):
+                out_json["composite"]["social_media_links"]["twitter"].append({"source":"company-website", "url": social_pages["twitter"]})
+            
+            if(social_pages.get("youtube")):
+                out_json["composite"]["social_media_links"]["youtube"].append({"source":"company-website", "url": social_pages["youtube"]})
+
+        if(web_data.get("logo_url")):
+            out_json["composite"]["logo"].append({"source": "company-website", "data": {"url": web_data["logo_url"], "path": None}})
+
+    # getting google data
+    if(json_obj.get("google_data")):
+        google_data = json_obj["google_data"]
+        out_json["matched_data"].append({"google": google_data})
+
+        if(google_data.get("emails")):
+            for email in google_data["emails"]:
+                out_json["composite"]["emails"].append({"source": "google", "email": email})
+
+        if(google_data.get("social_pages")):
+            social_pages = google_data["social_pages"]
+
+            if(social_pages.get("facebook")):
+                out_json["composite"]["social_media_links"]["facebook"].append({"source":"google", "url": social_pages["facebook"]})
+
+            if(social_pages.get("instagram")):
+                for item in social_pages["instagram"]:
+                    out_json["composite"]["social_media_links"]["instagram"].append({"source":"google", "url": item})
+
+            if(social_pages.get("linkedin")):
+                for item in social_pages["linkedin"]:
+                    out_json["composite"]["social_media_links"]["linkedin"].append({"source":"google", "url": item})
+
+            if(social_pages.get("twitter")):
+                for item in social_pages["twitter"]:
+                    out_json["composite"]["social_media_links"]["twitter"].append({"source":"google", "url": item})
+            
+            if(social_pages.get("youtube")):
+                for item in social_pages["youtube"]:
+                    out_json["composite"]["social_media_links"]["youtube"].append({"source":"google", "url": item})
+
+        if(google_data["google_map_address"].get("address")):
+            for address in google_data["google_map_address"]["address"]:
+                out_json["composite"]["addresses"].append({"source":"google", "address": address})
+
+    # getting facebook data
+    if(json_obj.get("facebook_data")):
+        facebook_data = json_obj["facebook_data"]
+        out_json["matched_data"].append({"facebook": facebook_data})
+
+        for dic in facebook_data:
+            if(dic.get("address")):
+                out_json["composite"]["addresses"].append({"source":"facebook", "address": dic["address"]})
+
+            if(dic.get("phone")):
+                out_json["composite"]["telephones"].append({"source":"facebook", "phone": dic["phone"]})
+
+            if(dic.get("email")):
+                for email in dic["email"]:
+                    out_json["composite"]["emails"].append({"source":"facebook", "email": email})
+            
+            if(dic.get("saved_logo")):
+                out_json["composite"]["logo"].append({"source":"facebook", "data": {"url": dic["saved_logo"], "path": None}})
+
+            
+            if(dic.get("more_info")):
+                out_json["composite"]["company-description"].append({"source":"facebook", "data": dic["more_info"]})
+
+    # getting whois data
+    if(json_obj.get("whois")):
+        whois_data = json_obj["whois"]
+        out_json["matched_data"].append({"whois": whois_data})
+
+        if(whois_data.get("organization")):
+            out_json["composite"]["company-name"].append({"source": "whois", "data": whois_data["organization"]})
+
+        if(whois_data.get("email")):
+            out_json["composite"]["emails"].append({"source": "whois", "email": whois_data["email"]})
+    
+    # getting info-box data
+    if(json_obj.get("infobox_info")):
+        info_box_data = json_obj["infobox_info"]
+        out_json["matched_data"].append({"info-box": info_box_data})
+        
+        if(info_box_data.get("address")):
+            out_json["composite"]["addresses"].append({"source": "info-box", "address": info_box_data["address"]})
+
+        if(info_box_data.get("phone")):
+            out_json["composite"]["telephones"].append({"source": "info-box", "phone": info_box_data["phone"]})
+
+    # getting country_module data
+    if(json_obj["country_module"].get("result")):
+        country_module_data = json_obj["country_module"]["result"]
+        out_json = get_country_module_composite_data(country_module_data, out_json, country)
+    
+    out_json = purify_composite_data(out_json)
+
+    return {"result": out_json}
+
+            

@@ -1,67 +1,6 @@
 [
     {
         "input_data": {
-            "domain": "www.mobyco.ru",
-            "name": "Mobyco",
-            "country": "Russia"
-        },
-        "website_data": {
-            "result": {
-                "web_title": "Мебель на заказ для маленьких интерьеров mobyco",
-                "social_pages": {
-                    "instagram": "https://www.instagram.com/p/Bx4pbBqCpb8"
-                },
-                "phones": [
-                    "(812) 640-5060",
-                    "+7 (952) 373-3111"
-                ],
-                "emails": [
-                    "info@mobyco.ru"
-                ],
-                "addresses": [
-                    {
-                        "source": "company-website",
-                        "address": "197375, Санкт-Петербург, Репищева ул. 14, корп. 19Ц",
-                        "components": {
-                            "country": "РОССИЯ",
-                            "state": "",
-                            "city": "САНКТ-ПЕТЕРБУРГ",
-                            "zip-code": "197375",
-                            "street-address": "19Ц  14 РЕПИЩЕВА УЛ."
-                        }
-                    }
-                ]
-            }
-        },
-        "google_data": {
-            "emails": [
-                "info@mobyco.ru"
-            ],
-            "social_pages": {
-                "facebook": "",
-                "linkedin": [],
-                "instagram": [],
-                "twitter": [],
-                "youtube": []
-            },
-            "google_map_address": {
-                "address": []
-            }
-        },
-        "facebook_data": [],
-        "whois": {},
-        "infobox_info": {
-            "address": "корп. 19, Repishcheva Ulitsa, 14, St Petersburg, Russia, 197349",
-            "phone": "+7 952 373-31-11",
-            "website": "http://www.mobyco.ru/"
-        },
-        "country_module": {
-            "domain": "www.mobyco.ru",
-            "result": {}
-        }
-    },
-    {
-        "input_data": {
             "domain": "www.shiseido.com",
             "name": "SHISEIDO",
             "country": "Russia"
@@ -490,7 +429,21 @@
                             "zip-code": "",
                             "street-address": "КВАРТАЛ ДОС (БОЛЬШОЙ АЭРОДРОМ), Д. 19 ОФИС 1"
                         }
+                    },
+                    {
+                        "source": "country-module",
+                        "address": "РОССИЯ, 680014, Habarovsk, КВ-Л DOS (BOLSHOJ АЭРОДРОМ), д 19, кв 1",
+                        "components": {
+                            "country": "РОССИЯ",
+                            "state": "",
+                            "city": "",
+                            "zip-code": "680014",
+                            "street-address": "HABAROVSK, КВ-Л DOS (BOLSHOJ АЭРОДРОМ), Д 19, КВ 1"
+                        }
                     }
+                ],
+                "phones": [
+                    "7(4212)93-10-97"
                 ]
             }
         }
@@ -573,7 +526,12 @@
         },
         "country_module": {
             "domain": "www.rassadatd.ru",
-            "result": {}
+            "result": {
+                "vk_link": {
+                    "source": "google",
+                    "url": "https://vk.com/rassadaclub/video-132629180_456239029"
+                }
+            }
         }
     },
     {
@@ -675,6 +633,17 @@
                 "OKPO": "53276222",
                 "addresses": [
                     {
+                        "source": "google_geo_api",
+                        "address": "набережная реки Фонтанки, 40, цокольный этаж, Санкт-Петербург, Россия, 191025",
+                        "components": {
+                            "country": "Россия",
+                            "state": "",
+                            "city": "Санкт-Петербург",
+                            "street-address": "цокольный этаж, 40, набережная реки Фонтанки, Центральный район, Центральный",
+                            "postal-code": "191025"
+                        }
+                    },
+                    {
                         "source": "country-module",
                         "address": "г. Санкт-Петербург, набережная Реки Фонтанки, д.  170 литера  А 2 этаж часть   пом. 5-Н",
                         "components": {
@@ -690,8 +659,13 @@
                     "elena.soroka@vitec.ru"
                 ],
                 "phones": [
+                    "7(812)579-77-18",
                     "8 (812) 575-45-91"
-                ]
+                ],
+                "vk_link": {
+                    "source": "google",
+                    "url": "https://vk.com/vitecavtomatica"
+                }
             }
         }
     },

@@ -1,9 +1,10 @@
 import re
 import requests
 
-from  root.general_tools.tools import make_soup, save_logo
-from root.general_tools.tools import getHtmlResponse, getSoup
+from root.general_tools.tools import getHtmlResponse, getSoup, make_soup, save_logo, get_google_formatted_address_using_address
 
+from googletrans import Translator
+translator = Translator()
 
 def facebook_adress(soup):
     res = soup.select('._5aj7._20ud ._2iem')
@@ -96,18 +97,11 @@ def facebook_more_info(soup):
 
     return result
 
-def facebook_website(soup):
-    res = soup.select('._50f4')
-    web_link = ''
-    for i in res:
-        if 'http' in i.get_text():
-            web_link += i.get_text()
-    return web_link
 
 def facebook_info(fb_url, domain, email_validation=False):
     print('>>>>>>>>>>>>>>>>>> NOW FACEBOOK INFO: ', fb_url)
     soup = make_soup(fb_url, use_proxy=True)
-    fb_phone, fb_address, fb_email, fb_foundation_year, fb_industry, fb_logo, saved_logo, fb_more, fb_website = '', '', '', '', '', '', '', '', ''
+    fb_phone, fb_address, fb_email, fb_foundation_year, fb_industry, fb_logo, saved_logo, fb_more = '', '', '', '', '', '', '', ''
 
     link = soup.find('div', attrs={"data-key": "tab_about"})
     if link:
@@ -119,11 +113,8 @@ def facebook_info(fb_url, domain, email_validation=False):
         fb_email = facebook_email(about_soup, email_validation=email_validation)
         fb_foundation_year = facebook_foundation_year(about_soup)
         fb_industry = facebook_industry(about_soup)
-        fb_website = facebook_website(about_soup)
-
         fb_logo = facebook_logo(about_link)
         saved_logo = save_logo(fb_logo, domain)
-
         fb_more = facebook_more_info(about_soup)
 
     fb_data = {
@@ -133,7 +124,6 @@ def facebook_info(fb_url, domain, email_validation=False):
         'email': fb_email,
         'foundation': fb_foundation_year,
         'industry': fb_industry,
-        'website': fb_website,
         'fb_logo': fb_logo,
         'saved_logo': saved_logo,
         'more_info': fb_more
@@ -170,13 +160,27 @@ def verify_facebook_link(link, domain, country, country_code):
                             if(re.search(country, fb_address, flags=re.IGNORECASE)):
                                 address_match_status = "matched"
                             else:
-                                return False
+                                address_dic = get_google_formatted_address_using_address(fb_address, "en")
+                                if(address_dic):
+                                    address_country = translator.translate(address_dic["components"]["country"], dest="en").text
+                                    if(country == address_country.lower()):
+                                        address_match_status = "matched"
+                                    else:
+                                        return False
+                                else:
+                                    address_match_status = "not_found"
                         else:
                             address_match_status = "not_found"
                         
                         if(phone_match_status == "not_found" and address_match_status == "not_found"):
-                            if(re.search(domain, soup.text) or re.search(domain, about_soup.text)):
-                                return True
+                            items = about_soup.select('._50f4')
+                            if(items):
+                                main_domain = domain.replace("www.", "")
+                                main_domain = main_domain.split("/")[0]
+                                for item in items:
+                                    if(re.search(domain, item.text)):
+                                        return True
+                                return False
                             else:
                                 return False
                         else:

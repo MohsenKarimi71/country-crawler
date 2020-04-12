@@ -289,10 +289,8 @@ for add in samples[10:20]:
 #************************************************************************#
 
 ###############################################################################################################################################
-
 ####################################################################### RUSSIA ################################################################
-from unit_test_tools.russia.functions import test_json2composite_russia
-
+from unit_test_tools.russia.functions import test_json2composite_russia, test_getRussianCompanyInfo
 
 #************************************************************************#
 def run_test_json2composite_russia(json_obj):
@@ -374,54 +372,358 @@ obj = {
 }
 
 #result = run_test_json2composite_russia(obj)
-#with open(os.path.join(dir_path, "output", "russia", "json2composite_out.json"), mode="w", encoding="utf-8") as outfile:
+#with open(os.path.join(dir_path, "output", "russia", "json2composite_output.json"), mode="w", encoding="utf-8") as outfile:
 #    outfile.write(json.dumps(result, indent=4, ensure_ascii=False))
+
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "russia", "russia_complate.json"), mode="r", encoding="utf-8").read())
+all = []
+for sample_dic in samples[:5]:
+    #print(sample_dic)
+    result = run_test_json2composite_russia(sample_dic)
+    all.append(result)
+
+    with open(os.path.join(dir_path, "output", "russia", "json2composite_output.json"), mode="w", encoding="utf-8") as outfile:
+        outfile.write(json.dumps(all, indent=4, ensure_ascii=False))
+'''
 #************************************************************************#
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "russia", "samples.json"), mode="r", encoding="utf-8").read())
+all = []
+for sample_dic in samples[:5]:
+    print(sample_dic)
+    domain = sample_dic["Website"]
+    org_name = sample_dic["Organization Name"]
+    data = test_getRussianCompanyInfo(domain, org_name)
+    all.append(data)
+
+    with open(os.path.join(dir_path, "output", "russia", "country_module_output.json"), mode="w", encoding="utf-8") as outfile:
+        outfile.write(json.dumps(all, indent=4, ensure_ascii=False))
+'''
+
+
+
+
+#************************************************************************#
+
 
 ##############################################################################################################################################
 ####################################################################### CHINA ################################################################
 
-from root.country_tools.china.tools import get_chinese_country_module_composite_data
+from root.country_tools.china.tools import get_chinese_country_module_composite_data, pick_matched_case_for_composite
+from root.general_tools.tools import json2composite
 
-china_obj = [
-                {
-                    "EnglishName":"Hefei Fengle Seed Co., Ltd.",
-                    "CompanyName":"合肥丰乐种业股份有限公司",
-                    "RegistrationNumbers":[
-                        "91340100148974717B",
-                        "340104148974717",
-                        "340000000015283"
-                    ],
-                    "Link":"http://www.fengle.com.cn",
-                    "ImageUrl":"https://img.qichacha.com/Product/5246f863-f779-4eae-8511-1ecc25ac93fe.jpg",
-                    "Domain":"农业",
-                    "Description":"丰乐种业是一家农业种子提供商，主营农作物种子、农产品、农化产品和相关进出口贸易业务，旗下拥有水稻、玉米、油菜、小麦、棉花、芝麻、西甜瓜、蔬菜等几十个种类的产品，此外还提供香料产品以及农副产品。",
-                    "PhoneNumbers":[
-                        "0551-62239975"
-                    ],
-                    "Emails":[
-                        "2939188579@qq.com"
-                    ],
-                    "StockNumber":"000713",
-                    "StockType":"其他投资者",
-                    "Employees":"417",
-                    "Location":{
-                        "Country":"China",
-                        "Address":"安徽省合肥市蜀山区创业大道 4 号",
-                        "City":"合肥市",
-                        "Province":"安徽省",
-                        "County":"蜀山区"
-                    },
-                    "Description_english":"Fengle Seed is an agricultural seed providers, the main crop seeds, agricultural products, agricultural products and related import and export business, which owns dozens of rice, corn, canola, wheat, cotton, sesame, melon, vegetables, etc. types of products, in addition to providing fragrance products and agricultural products.",
-                    "Domain_english":"agriculture",
-                    "Address_english":"China, Hefei, Anhui Province Shushan venture Avenue 4",
-                    "saved_logo":""
-                }
-]
 
-#data = get_chinese_country_module_composite_data(china_obj, "")
-#for k in data.keys():
-#    print(k, "\t\t\t\t >>> ", data[k])
+sample1 = {
+    "input_data": {
+        "search_category": "full_search",
+        "country": "china",
+        "query": "www.zte.com.cn",
+        "email_validation": "false",
+        "apikey": "1234",
+        "csrfmiddlewaretoken": "Whb4XTj4LzdVXhMQUjkmJKaAxyAzW9tjiRVprPiSNSdiDePVdnF8eSR0wO6k2fLR",
+        "name": "",
+        "domain": "www.zte.com.cn"
+    },
+    "website_data": {
+        "result": {
+            "logo_url": "https://res-www.zte.com.cn/mediares/zte/Global/logo/zte_logo_en.png?h=55&la=en&w=120",
+            "web_title": "ZTE ZTE Offical Website Leading G Innovations The worlds leading communications ",
+            "social_pages": {},
+            "phones": [],
+            "emails": [],
+            "addresses": []
+        }
+    },
+    "google_data": {
+        "emails": [
+            "support@zte.com.cn",
+            "mobile@zte.com.cn",
+            "zte.press.release@zte.com.cn",
+            "audit@zte.com.cn",
+            "privacy@zte.com.cn",
+            "tech.sp@zte.com.cn",
+            "ma.gaili@zte.com.cn",
+            "liujiawei@zte.com.cn"
+        ],
+        "social_pages": {
+            "facebook": "https://www.facebook.com/ZTEUK/",
+            "linkedin": [
+                "https://www.linkedin.com/company/zte"
+            ],
+            "instagram": [
+                "https://www.instagram.com/singhchinese/"
+            ],
+            "twitter": [],
+            "youtube": [
+                "https://www.youtube.com/watch?v=mjjsGL6Lkho"
+            ]
+        },
+        "google_map_address": {
+            "address": []
+        }
+    },
+    "facebook_data": [
+        {
+            "URL": "https://www.facebook.com/ZTEUK/",
+            "address": "",
+            "phone": "+20 3 4508722",
+            "email": [],
+            "foundation": "1985",
+            "industry": "Telecommunication Company · Mobile Phone Shop",
+            "fb_logo": "http://graph.facebook.com/ZTEUK/picture?type=large",
+            "saved_logo": "www.zte.com.cn.jpg",
+            "more_info": "UK Website http://www.zte.com.cn/global/ UK Twitter  www.twitter.com/zte_uk  Technical Support -mobile@zte.com.cn or visit www.facebook.com/ZTEMobileSupport"
+        }
+    ],
+    "whois": {
+        "name": "中兴通讯股份有限公司",
+        "email": "chen.xiaojun101@zte.com.cn",
+        "createDate": "1998-12-28 00:00:00",
+        "expireDate": "2023-12-28 00:00:00"
+    },
+    "country_module": {
+        "result": [
+            {
+                "EnglishName": "Zte Kangxun Telecom Co., Ltd.",
+                "RegistrationNumbers": [
+                    "440301279285671",
+                    "440301103342143"
+                ],
+                "ImageUrl": "https://qccdata.qichacha.com/AutoImage/53dec43940f7d48ba90cc2eec4c9d47c.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "0755-26770912",
+                    "26770912"
+                ],
+                "Emails": [
+                    "zhang.yu68@zte.com.cn"
+                ],
+                "StockNumber": None,
+                "StockType": "其他投资者",
+                "Employees": "3307",
+                "Location": {
+                    "Country": "China",
+                    "Address": "深圳市南山区科技南路55号中兴通讯研发楼A座3楼",
+                    "City": "深圳市",
+                    "Province": "广东省",
+                    "County": "盐田区"
+                },
+                "Address_english": "China, Nanshan District, Shenzhen Science and Technology Road 55, ZTE R & D Building, 3rd Floor, Block A",
+                "saved_logo": "LM_www.zte.com.cn.jpg"
+            },
+            {
+                "EnglishName": "Zte International Investment Limited",
+                "RegistrationNumbers": [
+                    "440301103114530"
+                ],
+                "ImageUrl": "https://qccdata.qichacha.com/AutoImage/6c10fc5c61cd3d88adfb3435ae62dde6.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "18675555667"
+                ],
+                "Emails": [
+                    "lou.wei@zte-i.com",
+                    "chen.lifei@zte-i.com"
+                ],
+                "StockNumber": None,
+                "StockType": "自然人股东",
+                "Employees": "8",
+                "Location": {
+                    "Country": "China",
+                    "Address": "深圳市南山区科技南路中兴通讯研发大楼31楼B区",
+                    "City": "深圳市",
+                    "Province": "广东省",
+                    "County": "南山区"
+                },
+                "Address_english": "China, South Road, Nanshan District, Shenzhen Science and Technology ZTE R & D Building B, Building 31",
+                "saved_logo": "LM_www.zte.com.cn.jpg"
+            },
+            {
+                "EnglishName": "<<No English Name>>",
+                "RegistrationNumbers": [
+                    "440301103105643"
+                ],
+                "ImageUrl": "https://co-image.qichacha.com/CompanyImage/b4e25fe750b3dc8827702af5020fe428.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "0755-26771637"
+                ],
+                "Emails": [
+                    "guo.biao1@zte.com.cn"
+                ],
+                "StockNumber": None,
+                "StockType": "企业法人",
+                "Employees": "24",
+                "Location": {
+                    "Country": "China",
+                    "Address": "深圳市南山区高新技术产业园科技南路中兴通讯大厦A座四楼",
+                    "City": "深圳市",
+                    "Province": "广东省",
+                    "County": "南山区"
+                },
+                "Address_english": "China, South Road, Hi-Tech Industrial Park, Nanshan District, Shenzhen Science and Technology ZTE fourth floor of Building A",
+                "saved_logo": "LM_www.zte.com.cn.jpg",
+                "CompanyName": "深圳市中兴通讯资产管理有限公司",
+                "baidu_emails": [
+                    "liang.ping@zte.com.cn",
+                    "doc@zte.com.cn",
+                    "tian.tao@zte.com.cn",
+                    "IR@zte.com.cn",
+                    "wang.xin37@zte.com.cn",
+                    "chen.youquan@zte.com.cn",
+                    "xazp@zte.com.cn"
+                ]
+            },
+            {
+                "EnglishName": "Hangzhou Zhongxing Development Co., Ltd.",
+                "RegistrationNumbers": [
+                    "91330108773554769P",
+                    "330108000003561"
+                ],
+                "ImageUrl": "https://qccdata.qichacha.com/AutoImage/c0cefe644ed1ec7cd118149cea818662.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "0571-87817799",
+                    "87817799"
+                ],
+                "Emails": [
+                    None
+                ],
+                "StockNumber": None,
+                "StockType": "企业法人",
+                "Employees": "1",
+                "Location": {
+                    "Country": "China",
+                    "Address": "浙江省杭州市滨江区浦沿街道火炬南路1213号",
+                    "City": "杭州市",
+                    "Province": "浙江省",
+                    "County": "滨江区"
+                },
+                "Address_english": "China, Binjiang District, Hangzhou, Zhejiang Province torch Road street Puyan 1213",
+                "saved_logo": "LM_www.zte.com.cn.jpg"
+            }
+        ]
+    }
+}
+
+sample2 = {
+    "input_data": {
+        "search_category": "full_search",
+        "country": "china",
+        "query": "www.goldzb.com",
+        "email_validation": "false",
+        "apikey": "1234",
+        "csrfmiddlewaretoken": "XPUOkMfdwniV2JM1XnoFkpnvlsK65dQpjpE9OIe1yGiiIGP6grJrPx4VkIgRbj8X",
+        "name": "",
+        "domain": "www.goldzb.com"
+    },
+    "google_data": {
+        "emails": [],
+        "social_pages": {
+            "facebook": "",
+            "linkedin": [
+                "https://www.linkedin.com/company/goldleaf-jewelry-co-ltd"
+            ],
+            "instagram": [],
+            "twitter": [],
+            "youtube": []
+        },
+        "google_map_address": {
+            "address": []
+        }
+    },
+    "country_module": {
+        "result": [
+            {
+                "EnglishName": "Jinzhou Cihang Group Co., Ltd.",
+                "CompanyName": "金洲慈航集团股份有限公司",
+                "RegistrationNumbers": [
+                    None,
+                    "230000100000347"
+                ],
+                "Link": "http://www.goldzb.com",
+                "ImageUrl": "https://img.qichacha.com/Product/ff45d840-bacb-4dec-b0e6-cd6ee4972415.jpg",
+                "Domain": "电子商务",
+                "Description": "金洲慈航是一个黄金珠宝首饰品牌，主要从事珠宝首饰研发设计、加工制造、批发零售、品牌加盟及电子商务、黄金金融等业务，产品涵盖千足金和足金的项链、戒指、耳环、手镯及金条等，已开设直营加盟实体店300余家。",
+                "PhoneNumbers": [
+                    "010-64100338"
+                ],
+                "Emails": [
+                    "jinye000587@163.com"
+                ],
+                "StockNumber": "000587",
+                "StockType": "自然人股东",
+                "Employees": None,
+                "Location": {
+                    "Country": "China",
+                    "Address": "黑龙江省伊春市伊春区青山西路118号",
+                    "City": "伊春市",
+                    "Province": "黑龙江省",
+                    "County": "伊美区"
+                },
+                "Description_english": "Jinzhou Cihang is a gold jewelery brand, mainly engaged in research and development of jewelry design, manufacturing, wholesale and retail, and e-commerce brand to join, gold and other financial services products cover thousands of gold and gold necklaces, rings, earrings, bracelets and gold bullion and so on, has been set up to join the Direct store more than 300.",
+                "Domain_english": "E-commerce",
+                "Address_english": "China, Yichun City, Heilongjiang Province, Yichun District 118 Castle Peak Road",
+                "saved_logo": "LM_www.goldzb.com.jpg"
+            },
+            {
+                "EnglishName": "<<No English Name>>",
+                "RegistrationNumbers": [
+                    "91440300056170965F",
+                    "440300056170965",
+                    "440301106629277"
+                ],
+                "ImageUrl": "https://qccdata.qichacha.com/AutoImage/aa8732bfefdac4a5b78a070a5a827e4e.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "0755-22929922"
+                ],
+                "Emails": [
+                    "1054502237@qq.com"
+                ],
+                "StockNumber": None,
+                "StockType": "其他投资者",
+                "Employees": "45",
+                "Location": {
+                    "Country": "China",
+                    "Address": "深圳市罗湖区翠竹街道贝丽北路水贝金座大厦4层402",
+                    "City": "深圳市",
+                    "Province": "广东省",
+                    "County": "罗湖区"
+                },
+                "Address_english": "China, Luohu District, Shenzhen Tsui Chuk Street Beili Road water Pui Golden Tower Building, 4th floor 402",
+                "saved_logo": "LM_www.goldzb.com.jpg",
+                "CompanyName": "深圳市金叶珠宝有限公司"
+            },
+            {
+                "EnglishName": "<<No English Name>>",
+                "RegistrationNumbers": [
+                    "420103000350422"
+                ],
+                "ImageUrl": "https://co-image.qichacha.com/CompanyImage/04c4a5e7a67ebc7118a983009208112d.jpg?x-oss-process=image/resize,w_160",
+                "PhoneNumbers": [
+                    "027-85680816"
+                ],
+                "Emails": [
+                    "280062554@qq.com"
+                ],
+                "StockNumber": None,
+                "StockType": "企业法人",
+                "Employees": "55",
+                "Location": {
+                    "Country": "China",
+                    "Address": "武汉市江汉区中山大道744号1-4层",
+                    "City": "武汉市",
+                    "Province": "湖北省",
+                    "County": "江汉区"
+                },
+                "Address_english": "China, Jianghan District, Zhongshan Road 744 Layer 1-4",
+                "saved_logo": "LM_www.goldzb.com.jpg",
+                "CompanyName": "金叶珠宝（武汉）有限公司"
+            }
+        ]
+    }
+}
+
+#data = json2composite(sample2, "china")
+#with open(os.path.join(dir_path, "output", "china", "json2composite_output.json"), mode="w", encoding="utf-8") as outfile:
+#    outfile.write(json.dumps(data, indent=4, ensure_ascii=False))
 
 ##############################################################################################################################################
 
@@ -431,5 +733,5 @@ from root.facebook_tools.tools import verify_facebook_link, facebook_info
 #print(verify_facebook_link("https://www.facebook.com/rassadatd/", "rassadatd.ru", "russia", "7"))
 #print(verify_facebook_link("https://www.facebook.com/mars.energo", "mars-energo.ru", "russia", "7"))
 #print(verify_facebook_link("https://www.facebook.com/chelpipe/", "chtpz.ru", "russia", "7"))
-#print(verify_facebook_link("https://www.facebook.com/pages/%D0%9C%D0%B8%D0%BD%D0%B8%D1%81%D1%82%D0%B5%D1%80%D1%81%D1%82%D0%B2%D0%BE-%D0%BE%D0%B1%D0%BE%D1%80%D0%BE%D0%BD%D1%8B-%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9-%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8/1492252324350852", "mil.ru", "russia", "7"))
-print(facebook_info("https://www.facebook.com/chelpipe/", "chtpz.ru"))
+print(verify_facebook_link("https://www.facebook.com/pages/%D0%9C%D0%B8%D0%BD%D0%B8%D1%81%D1%82%D0%B5%D1%80%D1%81%D1%82%D0%B2%D0%BE-%D0%BE%D0%B1%D0%BE%D1%80%D0%BE%D0%BD%D1%8B-%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9-%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8/1492252324350852", "mil.ru", "russia", "7"))
+#print(facebook_info("https://www.facebook.com/chelpipe/", "chtpz.ru"))
