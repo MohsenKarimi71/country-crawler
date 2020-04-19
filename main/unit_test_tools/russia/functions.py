@@ -1,4 +1,5 @@
-from root.general_tools.tools import load_country_context, json2composite
+from root.general_tools.tools import load_country_context
+from root.general_tools.composite_tools import json2composite
 from root.country_tools.russia.russia_country_module_tools import getRussianCompanyInfo
 import re
 

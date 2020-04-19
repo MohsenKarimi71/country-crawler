@@ -1,6 +1,6 @@
-from root.general_tools.tools import getHtmlResponse, getSoup, get_google_formatted_address_using_address, get_unique_addresses_for_composite_data
+from root.general_tools.tools import getHtmlResponse, getSoup, get_google_formatted_address_using_address
+from root.general_tools.composite_tools import get_unique_addresses_for_composite_data
 import re
-
 number_founder_pattern = "[\D]*(\d+)[\D]*"
 
 def find_russian_addresses(text, patterns):
@@ -261,8 +261,6 @@ def purify_russian_phones(original_phone_list, composite_mode=False):
 
 
 def get_russian_country_module_composite_data(country_module_data, composite_data):
-    composite_data["matched_data"].append({"country-module": country_module_data})
-    
     if(country_module_data.get("legal_name")):
         composite_data["composite"]["company-name"].append({"source": "country-module", "data": country_module_data["legal_name"]["ru"]})
 
