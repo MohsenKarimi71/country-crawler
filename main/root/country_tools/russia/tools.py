@@ -225,7 +225,9 @@ def find_russian_phones(text, patterns):
         for item in items:
             if(re.search("(\s|\(.+\)|\-)", item.strip())):
                 phones.append(item.strip())
-    return list(set(phones))
+    phones = list(set(phones))
+    phones = [phone.replace("\n", "") for phone in phones]
+    return phones
 
 def purify_russian_phones(original_phone_list, composite_mode=False):
     '''

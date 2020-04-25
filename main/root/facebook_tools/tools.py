@@ -78,7 +78,7 @@ def facebook_logo(url):
     return 'http://graph.facebook.com/' + fb_id + '/picture?type=large'
 
 def get_facebook_logo(url):
-    response = getHtmlResponse(url, use_proxy=False)
+    response = getHtmlResponse(url, use_proxy=True)
     if(response):
         soup = getSoup(response)
         if(soup):

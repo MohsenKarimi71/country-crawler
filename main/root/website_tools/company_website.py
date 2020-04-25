@@ -41,7 +41,8 @@ def find_second_page_url(main_page_soup, url, country_context):
 
 def get_website_logo(soup_obj):
     if(soup_obj):
-        img = soup_obj.find('img')
+        body = soup_obj.body
+        img = body.find('img')
         if img:
             return img.get('src')
         else:

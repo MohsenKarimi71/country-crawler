@@ -5,6 +5,10 @@ from root.website_tools.company_website import find_second_page_url, website_inf
 import os
 import json
 
+import winsound
+duration = 300  # milliseconds
+freq = 600  # Hz
+
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 def get_domain_contact_page_text(domain):
@@ -951,7 +955,7 @@ data = {
             "apikey": "1234",
             "csrfmiddlewaretoken": "Whb4XTj4LzdVXhMQUjkmJKaAxyAzW9tjiRVprPiSNSdiDePVdnF8eSR0wO6k2fLR",
             "name": "",
-            "domain": "www.zte.com.cn"
+            "website": "www.zte.com.cn"
         },
         "matched_data": {
             "website_data": {
@@ -1157,13 +1161,19 @@ u8 = "http://graph.facebook.com/ZTEUK/picture?type=large"
 #save_logo_from_composite_data(u8, "u13")
 
 from root.facebook_tools.tools import get_facebook_logo
+from root.website_tools.company_website import get_website_logo
 import shutil
 
-def save_logo(url, file_name):
+
+def save_logo(logo_url, website,  file_name):
     base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "saved_logos")
     if(not os.path.exists(os.path.join(base_path))):
         os.makedirs(os.path.join(base_path))
-            
+
+    if(logo_url.startswith("/")):
+        website = website.strip("/")
+        logo_url = "http://" + website + logo_url
+    
     x = logo_url.split('.')[-1]
     ext = x[-3:]
     if ext[-3:] in ['png', 'jpg', 'peg']:
@@ -1179,11 +1189,99 @@ def save_logo(url, file_name):
     else:
         print("logo link error")
 
-logo_url = get_facebook_logo("https://www.facebook.com/pg/www.TGH.com.tw")
+'''
+domain = "www.bwigroup.com"
+url = "http://www.bwigroup.com"
+r = getHtmlResponse(url)
+if(r):
+    soup = getSoup(r)
+    if(soup):
+        logo_url = get_website_logo(soup)
+        print(logo_url)
+        save_logo(logo_url, domain, "222")
+    else:
+        print("no soup")
+else:
+    print("no response")
+'''
+
+#logo_url = get_facebook_logo("https://www.facebook.com/pg/www.TGH.com.tw")
 #logo_url = get_facebook_logo("https://www.facebook.com/pg/chelpipe/about/?ref=page_internal")
 #logo_url = get_facebook_logo("https://www.facebook.com/pg/%D0%9A%D0%B0%D1%84%D0%B5%D0%B4%D1%80%D0%B0-%D0%9F%D0%9C%D0%98-%D0%9A%D0%BD%D0%90%D0%93%D0%A2%D0%A3-1850953428521073/about/")
 #logo_url = get_facebook_logo("https://www.facebook.com/pg/knastu.official/about/?ref=page_internal")
 #logo_url = get_facebook_logo("https://www.facebook.com/pg/estacons/about/?ref=page_internal")
 #logo_url = get_facebook_logo("https://www.facebook.com/chelpipe")
-print(logo_url)
-save_logo(logo_url, "3")
+#print(logo_url)
+#save_logo(logo_url, "3")
+
+
+from root.country_tools.china.tools import get_legal_name_from_baidu, scrape_qichacha
+domains = [
+    "www.sndf.com.cn",
+    "www.hesaitech.com",
+    "www.gad.com.cn",
+    "www.huasen.com.cn",
+    "www.bwigroup.com",
+    "www.ecepdi.com",
+    "www.dsbj1.com",
+    "www.citichmc.com",
+    "www.greatwall.com.cn",
+    "www.sac-china.com",
+    "www.opple.com",
+    "www.colibri.com.cn",
+    "www.nuctech.com",
+    "www.artosyn.com",
+    "www.ruentex.com.cn",
+    "www.sz-sunway.com",
+    "www.surun-tech.com",
+    "www.troowin.com",
+    "www.szemd.com",
+    "www.crland.com.cn",
+    "www.bcel-cn.com",
+    "www.hdbp.com"
+]
+'''
+query = query21
+print("query: ", query)
+names = get_legal_name_from_baidu(query)
+print("names: ", names)
+
+#print(50 * "***")
+#scrape_qichacha(query)
+'''
+
+from root.country_tools.china.tools import get_legal_name_from_baidu_using_selenium
+
+all_names = []
+for domain in domains[:11]:
+    print(domain)
+    names = get_legal_name_from_baidu_using_selenium(domain)
+    print(names)
+    all_names.append({"domain": domain, "names": names})
+    print(50 * "*")
+    with open(os.path.join(dir_path, "output", "china", "50_baidu_legel_names.json"), encoding="utf-8", mode="w") as outfile:
+        outfile.write(json.dumps(all_names, indent=4, ensure_ascii=False))
+
+'''
+import time
+from root.country_tools.china.tools import get_legal_name_from_baidu_using_selenium_by_list
+
+try:
+    samples = json.loads(open(os.path.join(dir_path, "samples", "china", "500_samples.json"), encoding="utf-8", mode="r").read())
+    domains = [dic["Website"] for dic in samples]
+
+    s_time = time.time()
+
+    all_names = get_legal_name_from_baidu_using_selenium_by_list(domains)
+
+    print("time: ", time.time() - s_time)
+
+    with open(os.path.join(dir_path, "output", "china", "50_baidu_legel_names.json"), encoding="utf-8", mode="w") as outfile:
+        outfile.write(json.dumps(all_names, indent=4, ensure_ascii=False))
+
+finally:
+    print("time: ", time.time() - s_time)
+    for i in range(2):
+        winsound.Beep(freq, duration)
+        time.sleep(1)
+'''

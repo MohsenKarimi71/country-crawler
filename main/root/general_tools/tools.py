@@ -615,10 +615,10 @@ country_dial_codes = {
 }
 
 # FUNCTIONS
-def getHtmlResponse(url, cookies={}, use_proxy=False, stream=False):
-    headers = {
-        'User-Agent':ua.random,
-    }
+def getHtmlResponse(url, cookies={}, headers=None, use_proxy=False, stream=False):
+    if(not headers):
+        headers = {'User-Agent':ua.random,}
+
     if(use_proxy):
         proxies = {
             "http": "http://scraperapi:a057568fadc410eeffbfa8c72a1149js@proxy-server.scraperapi.com:8001",
@@ -1090,3 +1090,31 @@ def purify_phones(phone_list, country):
         purified_phones = purify_indian_phones(phone_list)
 
     return purified_phones
+
+def stringCookiesToDict(string_cookies):
+    '''
+    convert string formatted cookies to dictionary form
+    '''
+    itemDict = {}
+    items = string_cookies.split(';')
+    for item in items:
+        key = item.split('=')[0].replace(' ', '')
+        value = item.split('=')[1]
+        itemDict[key] = value
+    return itemDict
+
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+def getSeleniumBrowser(headless=False):
+    from root.general_tools.search_settings import CHROME_DRIVER_LOCATION
+    options = Options()
+    if(headless):
+        options.headless = True   # run driver in headless mode
+
+    options.add_argument('log-level=3')   # disable loging for info, and warning levels
+
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_LOCATION, chrome_options=options) 
+    return browser
+

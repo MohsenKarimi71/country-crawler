@@ -248,15 +248,16 @@ def save_logo_from_composite_data(composite_data, file_name):
         for logo in composite_data["composite"]["logo"]:
             if(logo["source"] == "company-website"):
                 logo_url = logo["data"]["url"]
+
+                if(logo_url.startswith("/")):
+                    website = composite_data["input_data"]["website"]
+                    website = website.strip("/")
+                    logo_url = "http://" + website + logo_url
                 break
+
         if(not logo_url):
             logo_url = composite_data["composite"]["logo"][0]["data"]["url"]
         
-        if(logo_url.startswith("/")):
-            website = composite_data["input_data"]["website"]
-            website = website.strip("/")
-            logo_url = website + logo_url
-            
         x = logo_url.split('.')[-1]
         ext = x[-3:]
         if ext[-3:] in ['png', 'jpg', 'peg']:
