@@ -6,6 +6,25 @@ from root.general_tools.tools import getHtmlResponse, getSoup, stringCookiesToDi
 from root.general_tools.composite_tools import get_unique_addresses_for_composite_data
 number_founder_pattern = "[\D]*(\d+)[\D]*"
 
+to_be_deleted_from_address = []
+number_founder_pattern = "[^\d]?(\d+)[^\d]?"
+
+def find_chinese_addresses(text, patterns, is_contact_page=False):
+    found_addresses = []
+    for pattern in patterns:
+        items = re.findall(pattern, text)
+        if(items):
+            for item in items:
+                # cleaning addresses
+                add = re.sub("\n", " ", item[0])
+                add = add.strip()
+                add = re.sub("\s{2,}", " ", add)
+                found_addresses.append(add)
+    return list(set(found_addresses))
+
+def get_chinese_address_parts(address, language="zh-cn"):
+    return {"address":address, "components":[], "source":"company-website"}
+
 def get_chinese_unique_addresses(original_address_list, composite_mode=False):
     if(len(original_address_list) > 1):
         unique_addresses = []
@@ -82,6 +101,58 @@ def get_chinese_unique_addresses(original_address_list, composite_mode=False):
         unique_addresses = original_address_list
 
     return unique_addresses
+
+def recheck_chinese_address(address):
+    address = re.sub("(\w*地址[\s:：]+)", "", address, flags=re.IGNORECASE)
+    return address.strip()
+
+def purify_chinese_addresses(address_list):
+    '''
+    get a list of chinese addresses and return a list of unique
+    and splitted addresses extracted from input addresses 
+    '''
+    rechecked_addresses = [recheck_chinese_address(add) for add in address_list]
+    unique_addresses = get_chinese_unique_addresses(rechecked_addresses)
+
+    splitted_addresses = []
+    for add in unique_addresses:
+        splitted_addresses.append(get_chinese_address_parts(add))
+    return splitted_addresses
+
+
+def find_chinese_phones(text, patterns):
+    phones = []
+    for pattern in patterns:
+        items = re.findall(pattern, text)
+        for item in items:
+            phones.append(item)
+    return list(set(phones))
+
+def purify_chinese_phones(phone_list):
+    '''
+    This function takes a list of phone numbers as input, extracts all unique 
+    phone numbers from input list and finally return a list of unique phone numbers.
+    '''
+    if(phone_list):
+        if(len(phone_list) == 1):
+            return phone_list
+        else:
+            unique_phones = []
+            filtered_list = [re.sub("[\D]", "", phone)[-10:] for phone in phone_list]
+
+            unique_phones.append({"original": phone_list[0], "filtered":filtered_list[0]})
+            for i in range(1, len(phone_list)):
+                is_unique = True
+                for dic in unique_phones:
+                    if(filtered_list[i] == dic["filtered"]):
+                        is_unique = False
+                        break
+                if(is_unique):
+                    unique_phones.append({"original": phone_list[i], "filtered":filtered_list[i]})
+            return [dic["original"] for dic in unique_phones]
+    else:
+        return []
+
 
 
 def pick_matched_case_for_composite(country_module_data, domain):
@@ -285,74 +356,61 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-import random
 
 baidu_home_url = "https://www.baidu.com/"
+chinese_legal_name_regex = "[^a-zA-Z\s\d\/\|.,:;#_-]{2,}限公司"
 
-def get_legal_name_from_baidu_using_selenium(domain, check_for_matched_domain=False):
-    page_loaded = False
-    max_try = 10
-    try_counter = 0
-    while((not page_loaded) and (try_counter < 10)):
-        try_counter += 1
-        try:
-            browser = getSeleniumBrowser(headless=True)
-            browser.get(baidu_home_url)
-            search_input = browser.find_element(By.CLASS_NAME, "s_ipt")
-            #print('search input enabled? ==>', search_input.is_enabled())
-            page_loaded = True
-        except:
-            browser.close()
-            print("baidu main page not loaded successfully...")
-
-    if(not page_loaded):
-        print("browser not loaded successfully after", try_counter, " try")
-        return None
-
+def extract_baidu_legal_names_from_selenium_result_divs(result_divs, domain, check_for_matched_domain):
     names = []
-    q = "'{}' site:www.qichacha.com".format(domain)
-    print(q)
-    search_input.send_keys(q)
-    search_input.send_keys(u'\ue007')    #press Enter key
-
-    try:
-        result_divs = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, ".result.c-container"))
-        )
-        result_divs = browser.find_elements_by_css_selector(".result.c-container")
-        
+    if(check_for_matched_domain):
         for div in result_divs:
-            if(check_for_matched_domain):
-                if(domain in div.text):
-                    title_tag = div.find_element_by_css_selector("h3.t")
-                    title = title_tag.text
-                    if("限公司" in title):
-                        name = title.split("限公司")[0] + "限公司"
-                        if("-" in name):
-                            name = name.split("-")[1]
-                        if("_" in name):
-                            name = name.split("_")[1]
-                        names.append(name)
-            else:
+            if(domain in div.text):
                 title_tag = div.find_element_by_css_selector("h3.t")
                 title = title_tag.text
+                m = re.search(chinese_legal_name_regex, title)
+                if(m):
+                    names.append(m.group(0))
+                '''
                 if("限公司" in title):
                     name = title.split("限公司")[0] + "限公司"
                     if("-" in name):
                         name = name.split("-")[1]
                     if("_" in name):
                         name = name.split("_")[1]
+                    if("," in name):
+                        name = name.split(",")[1]
+                    if(not "*"  in name):
+                        name = re.sub("[a-zA-Z\s.;:,\/\|]", "", name)
+                        if(len(name.strip()) > 5):
+                            names.append(name)
+                '''
+    else:
+        for div in result_divs:
+            title_tag = div.find_element_by_css_selector("h3.t")
+            title = title_tag.text
+            m = re.search(chinese_legal_name_regex, title)
+            if(m):
+                names.append(m.group(0))
+            '''
+            if("限公司" in title):
+                name = title.split("限公司")[0] + "限公司"
+                if("-" in name):
+                    name = name.split("-")[1]
+                if("_" in name):
+                    name = name.split("_")[1]
+                if("," in name):
+                    name = name.split(",")[1]
+                if(not "*"  in name and len(name) > 5):
                     names.append(name)
-    except Exception as e:
-        print("error : ", str(e))
-        print("divs not found...")
-    return list(set(names))
+            '''
+    return names
 
-
-def get_legal_name_from_baidu_using_selenium_by_list(domain_list, check_for_matched_domain=False, result_reloading_pause_time=3):
+def get_legal_name_from_baidu_using_selenium(domain, check_for_matched_domain=False, source="www.qichacha.com"):
     page_loaded = False
     max_try = 10
     try_counter = 0
+    delay_for_loading_result = 1
+    sleep_time_between_requests=3
     while((not page_loaded) and (try_counter < 10)):
         try_counter += 1
         try:
@@ -367,54 +425,118 @@ def get_legal_name_from_baidu_using_selenium_by_list(domain_list, check_for_matc
 
     if(not page_loaded):
         print("browser not loaded successfully after", try_counter, " try")
-        return None
+        return []
 
-    result = []
-    for domain in domain_list[:10]:
+    names = []
+    q = '"{}" site:{}'.format(domain, source)
+    print(q)
+    try:
+        search_input.send_keys(q)
+        search_input.send_keys(u'\ue007')    #press Enter key
+        time.sleep(sleep_time_between_requests)  # pause program to new search result be loaded
+
         try:
-            dic = {"domain": domain, "names":[]}
-            q = "'{}' site:www.qichacha.com".format(domain)
+            result_divs = WebDriverWait(browser, delay_for_loading_result).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".result.c-container"))
+            )
+            result_divs = browser.find_elements_by_css_selector(".result.c-container")
+
+            names = extract_baidu_legal_names_from_selenium_result_divs(result_divs, domain, check_for_matched_domain)
+        
+        except Exception as e:
+            print("error : ", str(e))
+            print("divs not found. trying domain alone ...")
+            
+            q = '"{}"'.format(domain)
             print(q)
             for i in range(50):
                 search_input.send_keys(u'\ue003')   # clear search input for new search(back-space key)
             
             search_input.send_keys(q)
             search_input.send_keys(u'\ue007')    #press Enter key
-            time.sleep(result_reloading_pause_time + round((random.random() * 150) / 50))  # pause program to new search result be loaded
+            time.sleep(sleep_time_between_requests)  # pause program to new search result be loaded
+
+            result_divs = WebDriverWait(browser, delay_for_loading_result).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".result.c-container"))
+            )
+            result_divs = browser.find_elements_by_css_selector(".result.c-container")
+
+            names = extract_baidu_legal_names_from_selenium_result_divs(result_divs, domain, True)
+    
+    except Exception as e:
+        print("error : ", str(e))
+        print("divs not found...")
+    
+    browser.close()
+    return list(set(names))
+
+def get_legal_name_from_baidu_using_selenium_by_list(domain_list, check_for_matched_domain=False, source="www.qichacha.com"):
+    page_loaded = False
+    max_try = 10
+    try_counter = 0
+    delay_for_loading_result = 1
+    sleep_time_between_requests=3
+    while((not page_loaded) and (try_counter < 10)):
+        try_counter += 1
+        try:
+            browser = getSeleniumBrowser(headless=True)
+            browser.get(baidu_home_url)
+            search_input = browser.find_element(By.CLASS_NAME, "s_ipt")
+            #print('search input enabled? ==>', search_input.is_enabled())
+            page_loaded = True
+        except:
+            browser.close()
+            print("baidu main page not loaded successfully...")
+
+    if(not page_loaded):
+        print("browser not loaded successfully after", try_counter, " try")
+        return []
+
+    result = []
+    for domain in domain_list[:]:
+        try:
+            dic = {"domain": domain, "names":[]}
+            q = '"{}" site:{}'.format(domain, source)
+            print(q)
+            for i in range(50):
+                search_input.send_keys(u'\ue003')   # clear search input for new search(back-space key)
+            
+            search_input.send_keys(q)
+            search_input.send_keys(u'\ue007')    #press Enter key
+            time.sleep(sleep_time_between_requests)  # pause program to new search result be loaded
 
             try:
-                result_divs = WebDriverWait(browser, 10).until(
+                result_divs = WebDriverWait(browser, delay_for_loading_result).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, ".result.c-container"))
                 )
                 result_divs = browser.find_elements_by_css_selector(".result.c-container")
                 
-                for div in result_divs:
-                    if(check_for_matched_domain):
-                        if(domain in div.text):
-                            title_tag = div.find_element_by_css_selector("h3.t")
-                            title = title_tag.text
-                            if("限公司" in title):
-                                name = title.split("限公司")[0] + "限公司"
-                                if("-" in name):
-                                    name = name.split("-")[1]
-                                if("_" in name):
-                                    name = name.split("_")[1]
-                                dic["names"].append(name)
-                    else:
-                        title_tag = div.find_element_by_css_selector("h3.t")
-                        title = title_tag.text
-                        if("限公司" in title):
-                            name = title.split("限公司")[0] + "限公司"
-                            if("-" in name):
-                                name = name.split("-")[1]
-                            if("_" in name):
-                                name = name.split("_")[1]
-                            dic["names"].append(name)  
-            except Exception as e:
-                print("error : ", str(e), " >>> divs not found...")
-            finally:
+                dic["names"] = extract_baidu_legal_names_from_selenium_result_divs(result_divs, domain, check_for_matched_domain)
                 dic["names"] = list(set(dic["names"]))
                 result.append(dic)
+            
+            except Exception as e:
+                print("error : ", str(e))
+                print("divs not found. trying domain alone ...")
+
+                q = '"{}"'.format(domain)
+                print(q)
+                for i in range(50):
+                    search_input.send_keys(u'\ue003')   # clear search input for new search(back-space key)
+                
+                search_input.send_keys(q)
+                search_input.send_keys(u'\ue007')    #press Enter key
+                time.sleep(sleep_time_between_requests)  # pause program to new search result be loaded
+
+                result_divs = WebDriverWait(browser, delay_for_loading_result).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".result.c-container"))
+                )
+                result_divs = browser.find_elements_by_css_selector(".result.c-container")
+
+                dic["names"] = extract_baidu_legal_names_from_selenium_result_divs(result_divs, domain, True)
+                dic["names"] = list(set(dic["names"]))
+                result.append(dic) 
+                       
         except Exception as e:
             print("Error >>> ", str(e))
             browser.close()

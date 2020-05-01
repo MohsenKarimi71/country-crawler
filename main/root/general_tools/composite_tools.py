@@ -3,6 +3,8 @@ from root.general_tools.tools import *
 import re
 import os
 import shutil
+from urllib.parse import urljoin
+import validators
 
 from googletrans import Translator
 translator = Translator()
@@ -239,7 +241,7 @@ def purify_matched_unmatched_data(data):
     return final_data
 
 def save_logo_from_composite_data(composite_data, file_name):
-    base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "saved_logos")
+    base_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "saved_logos")
     if(not os.path.exists(os.path.join(base_path))):
         os.makedirs(os.path.join(base_path))
 
@@ -248,32 +250,53 @@ def save_logo_from_composite_data(composite_data, file_name):
         for logo in composite_data["composite"]["logo"]:
             if(logo["source"] == "company-website"):
                 logo_url = logo["data"]["url"]
+                use_proxy = False
 
-                if(logo_url.startswith("/")):
+                if(not validators.url(logo_url)):   # relative urls will not pass
+                    if(not logo_url.startswith("/")):
+                        logo_url = "/" + logo_url
                     website = composite_data["input_data"]["website"]
-                    website = website.strip("/")
-                    logo_url = "http://" + website + logo_url
+                    url = "http://" + website
+                    response = getHtmlResponse(url)
+                    if(not response and "www" not in website):
+                        url = "http://www." + website
+                        response = getHtmlResponse(url)
+                    if(response):
+                        final_url = response.url
+                        logo_url = urljoin(final_url, logo_url)
+                        print("logo url from ", logo["source"], " >>> ", logo_url)
+                    else:
+                        logo_url = None
+                        print("unable to build logo url")
                 break
 
         if(not logo_url):
-            logo_url = composite_data["composite"]["logo"][0]["data"]["url"]
+            use_proxy = True
+            for logo in composite_data["composite"]["logo"]:
+                if(logo["source"] != "company-website"):
+                    logo_url = logo["data"]["url"]
+                    print("logo url from ", logo["source"], " >>> ", logo_url)
+                    break
         
-        x = logo_url.split('.')[-1]
-        ext = x[-3:]
-        if ext[-3:] in ['png', 'jpg', 'peg']:
-            file_path = os.path.join(base_path, file_name + '.' + ext)
-        else:
-            file_path = os.path.join(base_path, file_name + '.jpg')
+        if(logo_url):
+            x = logo_url.split('.')[-1]
+            ext = x[-3:]
+            if ext[-3:] in ['png', 'jpg', 'peg', "gif", "tif"]:
+                file_path = os.path.join(base_path, file_name + '.' + ext)
+            else:
+                file_path = os.path.join(base_path, file_name + '.jpg')
 
-        response = getHtmlResponse(logo_url, stream=True, use_proxy=False)
-        if(response):
-            with open(file_path, 'wb') as out_file:
-                shutil.copyfileobj(response.raw, out_file)
-            del response
+            response = getHtmlResponse(logo_url, stream=True, use_proxy=use_proxy)
+            if(response):
+                with open(file_path, 'wb') as out_file:
+                    shutil.copyfileobj(response.raw, out_file)
+                del response
+            else:
+                print("logo link error")
         else:
-            print("logo link error")
+            print("no valid logo url found")
     else:
-        print("logo not found")
+        print("no logo in input data")
 
 
 def json2composite(json_obj, country):
