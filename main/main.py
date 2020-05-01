@@ -1127,7 +1127,41 @@ data = {
         }
     }
 
-#save_logo_from_composite_data(data, "image1")
+data2 = {
+    "composite": {
+        "logo": [
+                {
+                    "source": "company-website",
+                    "data": {
+                        "url": "img/soran2_2.gif",
+                        "path": None
+                    }
+                },
+                {
+                    "source": "country-module",
+                    "data": {
+                        "url": "https://co-image.qichacha.com/CompanyImage/b4e25fe750b3dc8827702af5020fe428.jpg?x-oss-process=image/resize,w_160",
+                        "path": None
+                    }
+                },
+                {
+                    "source": "facebook",
+                    "data": {
+                        "url": "www.zte.com.cn.jpg",
+                        "path": None
+                    }
+                },
+            ]
+    },
+    "input_data": {
+        "case created": "1970-01-01",
+        "case id": "2120963#0",
+        "organization": "Nsc",
+        "website": "nsc.ru",
+        "country": "Russia"
+        }
+}
+#save_logo_from_composite_data(data2, "image7")
 
 '''
 import requests
@@ -1217,6 +1251,8 @@ else:
 
 from root.country_tools.china.tools import get_legal_name_from_baidu, scrape_qichacha
 domains = [
+    "www.yantaimoon.cn",
+    "www.topraysolar.com",
     "www.sndf.com.cn",
     "www.hesaitech.com",
     "www.gad.com.cn",
@@ -1251,9 +1287,9 @@ print("names: ", names)
 '''
 
 from root.country_tools.china.tools import get_legal_name_from_baidu_using_selenium
-
+'''
 all_names = []
-for domain in domains[:11]:
+for domain in domains[:4]:
     print(domain)
     names = get_legal_name_from_baidu_using_selenium(domain)
     print(names)
@@ -1261,7 +1297,7 @@ for domain in domains[:11]:
     print(50 * "*")
     with open(os.path.join(dir_path, "output", "china", "50_baidu_legel_names.json"), encoding="utf-8", mode="w") as outfile:
         outfile.write(json.dumps(all_names, indent=4, ensure_ascii=False))
-
+'''
 '''
 import time
 from root.country_tools.china.tools import get_legal_name_from_baidu_using_selenium_by_list
@@ -1269,19 +1305,95 @@ from root.country_tools.china.tools import get_legal_name_from_baidu_using_selen
 try:
     samples = json.loads(open(os.path.join(dir_path, "samples", "china", "500_samples.json"), encoding="utf-8", mode="r").read())
     domains = [dic["Website"] for dic in samples]
+    print(len(domains))
 
     s_time = time.time()
 
-    all_names = get_legal_name_from_baidu_using_selenium_by_list(domains)
+    all_names = get_legal_name_from_baidu_using_selenium_by_list(domains[:50])
 
     print("time: ", time.time() - s_time)
 
-    with open(os.path.join(dir_path, "output", "china", "50_baidu_legel_names.json"), encoding="utf-8", mode="w") as outfile:
+    with open(os.path.join(dir_path, "output", "china", "51_baidu_legel_names.json"), encoding="utf-8", mode="w") as outfile:
         outfile.write(json.dumps(all_names, indent=4, ensure_ascii=False))
-
+except Exception as e:
+    print(str(e))
 finally:
     print("time: ", time.time() - s_time)
     for i in range(2):
         winsound.Beep(freq, duration)
         time.sleep(1)
+'''
+'''
+samples = json.loads(open(os.path.join(dir_path, "samples", "china", "500_samples.json"), encoding="utf-8", mode="r").read())
+domains = [dic["Website"] for dic in samples]
+for i in range(10, 20):
+    print("http://" + domains[i])
+'''
+
+from root.general_tools.tools import load_country_context
+import re
+
+country_context = load_country_context("china", add_with_global_setting=False)
+address_pattern = country_context["address_patterns"][0]
+#print(address_pattern)
+
+'''
+addresses = json.loads(open(os.path.join(dir_path, "samples", "china", "addresses.json"), encoding="utf-8", mode="r").read())
+for i, add in enumerate(addresses):
+    if(i%2 == 0):
+        print(add)
+        m = re.search(address_pattern, add)
+        if(m):
+            print(m.group(0))
+        print(50 * "*")
+'''
+
+phone_patterns = [
+    "(\(?86\)?[\s\.\-]+\(?0?\d{3}\)?[\s\.\-]+\d{7,8})",
+    "(\(?0?\d{3}\)?[\s\.\-]+\d{7,8})",
+]
+
+phones = [
+    "0591-87761300",
+    "+86-0898-68581891",
+    "+86 0535 2788888",
+    "0535-2788888",
+    "0411-82659666",
+    "0731-82183111",
+    "0599-7927686",
+    "0535-2119065",
+    "0771-3218880",
+    "(86) (938) 2859968"
+]
+'''
+for p in phones:
+    m = re.search(phone_patterns[0], p)
+    print(p)
+    if(m):
+        print(m.group(0))
+    print(50 * "*")
+'''
+
+
+from root.website_tools.company_website import website_info
+
+domain = "www.socomec.com"
+org_name = ""
+language = "fr"
+country = "france"
+data = website_info(domain, org_name, language, country=country)
+
+with open(os.path.join("temp.json"), encoding="utf-8", mode="a") as outfile:
+    outfile.write(json.dumps(data, indent=4, ensure_ascii=False))
+
+
+svg_logo_sample = "http://www.cnrs.fr/themes/custom/cnrs/logo.svg"
+'''
+from root.country_tools.china.tools import recheck_chinese_address
+addresses = json.loads(open(os.path.join(dir_path, "samples", "china", "addresses.json"), encoding="utf-8", mode="r").read())
+for i, add in enumerate(addresses):
+    if(i%2 == 0):
+        print(re.sub("\n", " ", add))
+        print(re.sub("\n", " ", recheck_chinese_address(add)))
+        print(50 * "*")
 '''

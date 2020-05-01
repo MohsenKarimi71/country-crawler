@@ -83,8 +83,23 @@ COUNTRY_CONTEXTS = {
             "language": "zh-cn",
             "country_code": "86",
             "phone_phrases": ["电话"],
-            "phone_patterns": [],
-            "address_patterns": ["地址"],
+            "phone_patterns": [
+                "(\(?86\)?[\s\.\-]+\(?0?\d{3}\)?[\s\.\-]+\d{7,8})",
+                "(\(?0?\d{3}\)?[\s\.\-]+\d{7,8})",
+            ],
+            "address_patterns": [
+                "(" + 
+                    "(" +
+                        "((地址[\s:：]+)|(\w{2}省)|(\w{2}市))" +
+                    ")" +
+                    "(" +
+                        "[\w\W]{5,50}" +
+                    ")" +
+                    "(" +
+                        "((邮编[\s:：]+\d{6})|(层)|(楼\d{1,4}楼)|(\d+号))" +
+                    ")"
+                ")",
+            ],
             "contact_text": ["联系方式", "联系我们"]
         },
         "russia": {
@@ -192,22 +207,6 @@ COUNTRY_CONTEXTS = {
             "phone_patterns": ["\d{2}[\s\-]\d{3}[\s\-]\d{2}[\s\-]\d{2}"],
             "address_patterns": [],
             "contact_text": ["Skontaktuj", "Skontaktuj się z nami"]
-        },
-        "spain": {
-            "country_code": "34",
-            "phone_phrases": [],
-            "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})",
-                               "(\+\d{2}[\s\-]\(?\d{2,3}\)[\s\-]\d{3,4}[\s\-]\d{3,4})",
-                               "(\+\d{2}[\s\-]\d{3}[\s\-]\d\s?\d\s?\d\s?\d\s?\d\s?\d)"],
-            "address_patterns": ["Av[\.]?\s.+"],
-            "contact_text": ["contacta"]
-        },
-        "colombia": {
-            "country_code": "57",
-            "phone_phrases": ["Teléfono"],
-            "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})", "\(\+?\d+\)\s?\(\d+\)\s\d{3}[\s\-]?\d{,4}"],
-            "address_patterns": ["Av[\.]?\s.+","Dirección:\s.+", "Calle[\s].+"],
-            "contact_text": ["contactenos"]
         },
         "uae": {
             "country_code": "971",
@@ -366,6 +365,83 @@ COUNTRY_CONTEXTS = {
                 ")"
             ],
             "contact_text": ["Contacto", "Contactanos", "CONTACT"]
+        },
+        "france" : {
+            "language": "fr",
+            "country_code": "33",
+            "phone_phrases": ["Tél", "Téléphone"],
+            "phone_patterns": [
+                "(\d{2}[\s\.\-]+\(0\)[\s\.\-]*\d[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2})",
+                "(\d{2}[\s\.\-]+\d[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2})",
+                "(\d{2}[\s\.\-]+\d{3}[\s\.\-]+\d{3}[\s\.\-]+\d{3})",
+                "(\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2}[\s\.\-]+\d{2})"
+            ],
+            "address_patterns": [
+                "(" + 
+                    "(" +
+                        "(((?<!\n).{,10}(?<!\w)rue)|((?<!\n).{,10}boulevard)|((?<!\n).{,10}Av\.))" +
+                    ")" +
+                    "(" +
+                        "[\w\W]{5,70}" +
+                    ")" +
+                    "(" +
+                        "((france)|((?<!\w)\d{5}(?!\w)[^\n]{,30}))" +
+                    ")"
+                ")",
+            ],
+            "contact_text": ["nous contacter", "contact", "contact us"]
+        },
+        "colombia" : {
+            "language": "es",
+            "country_code": "57",
+            "phone_phrases": ["Teléfono", "Tel"],
+            "phone_patterns": [
+                "(\(?\+?\d{2}[\s\.\-\+]?\d\)?[\s\.\-]+\d{7})",
+                "(\(?\+?\d{2}[\s\.\-\+]?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d{4})",
+                "(\(?\+?\d{2}[\s\.\-\+]?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d{2}[\s\.\-]+\d{2})",
+                "(\(?\+?\d{2}[\s\.\-\+]?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d[\s\.\-]+\d{3})",
+                "(\(?\+?\d{2}\)?[\s\.\-]+\(?\d\)?[\s\.\-]+\d{7})",
+                "(\(?\+?\d{2}\)?[\s\.\-]+\(?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d{4})",
+                "(\(?\+?\d{2}\)?[\s\.\-]+\(?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d{2}[\s\.\-]+\d{2})",
+                "(\(?\+?\d{2}\)?[\s\.\-]+\(?\d\)?[\s\.\-]+\d{3}[\s\.\-]+\d[\s\.\-]+\d{3})",
+            ],
+            "address_patterns": [
+                "(" + 
+                    "(" +
+                        "((Dirección)|(Carrera)|(Calle)|(Dirc\W)|(Cra\W))" +
+                    ")" +
+                    "(" +
+                        "[\w\W]{3,70}" +
+                    ")" +
+                    "(" +
+                        "((Colombia)|(#\s?\d[^\n]{,25}))" +
+                    ")"
+                ")",
+            ],
+            "contact_text": ["contactenos", "Contáctenos", "CONTACTO", "Contáctanos"]
+        },
+        "korea" : {
+        },
+        "taiwan" : {
+        },
+        "thailand" : {
+        },
+        "philippines" : {
+        },
+        "japan" : {
+        },
+        "uk" : {
+        },
+        "italy" : {
+        },
+        "spain": {
+            "country_code": "34",
+            "phone_phrases": [],
+            "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})",
+                               "(\+\d{2}[\s\-]\(?\d{2,3}\)[\s\-]\d{3,4}[\s\-]\d{3,4})",
+                               "(\+\d{2}[\s\-]\d{3}[\s\-]\d\s?\d\s?\d\s?\d\s?\d\s?\d)"],
+            "address_patterns": ["Av[\.]?\s.+"],
+            "contact_text": ["contacta"]
         }
     }
 }
@@ -1016,6 +1092,18 @@ def find_addresses(text, patterns, country, is_contact_page=False):
         from root.country_tools.india.tools import find_indian_addresses
         addresses = find_indian_addresses(text, patterns, is_contact_page)
     
+    elif(country == "china"):
+        from root.country_tools.china.tools import find_chinese_addresses
+        addresses = find_chinese_addresses(text, patterns, is_contact_page)
+    
+    elif(country == "france"):
+        from root.country_tools.france.tools import find_french_addresses
+        addresses = find_french_addresses(text, patterns, is_contact_page)
+    
+    elif(country == "colombia"):
+        from root.country_tools.colombia.tools import find_Colombian_addresses
+        addresses = find_Colombian_addresses(text, patterns, is_contact_page)
+    
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1040,6 +1128,18 @@ def purify_addresses(address_list, country, original_source):
         from root.country_tools.india.tools import purify_indian_addresses
         purified_addresses = purify_indian_addresses(address_list)
     
+    elif(country == "china"):
+        from root.country_tools.china.tools import purify_chinese_addresses
+        purified_addresses = purify_chinese_addresses(address_list)
+    
+    elif(country == "france"):
+        from root.country_tools.france.tools import purify_french_addresses
+        purified_addresses = purify_french_addresses(address_list)
+    
+    elif(country == "colombia"):
+        from root.country_tools.colombia.tools import purify_Colombian_addresses
+        purified_addresses = purify_Colombian_addresses(address_list)
+
     return purified_addresses
 
 
@@ -1065,6 +1165,18 @@ def find_phones(text, patterns, country):
         from root.country_tools.india.tools import find_indian_phones
         phones = find_indian_phones(text, patterns)
     
+    elif(country == "china"):
+        from root.country_tools.china.tools import find_chinese_phones
+        phones = find_chinese_phones(text, patterns)
+    
+    elif(country == "france"):
+        from root.country_tools.france.tools import find_french_phones
+        phones = find_french_phones(text, patterns)
+    
+    elif(country == "colombia"):
+        from root.country_tools.colombia.tools import find_Colombian_phones
+        phones = find_Colombian_phones(text, patterns)
+
     return phones
 
 def purify_phones(phone_list, country):
@@ -1089,6 +1201,17 @@ def purify_phones(phone_list, country):
         from root.country_tools.india.tools import purify_indian_phones
         purified_phones = purify_indian_phones(phone_list)
 
+    elif(country == "china"):
+        from root.country_tools.china.tools import purify_chinese_phones
+        purified_phones = purify_chinese_phones(phone_list)
+    
+    elif(country == "france"):
+        from root.country_tools.france.tools import purify_french_phones
+        purified_phones = purify_french_phones(phone_list)
+    
+    elif(country == "colombia"):
+        from root.country_tools.colombia.tools import purify_Colombian_phones
+        purified_phones = purify_Colombian_phones(phone_list)
     return purified_phones
 
 def stringCookiesToDict(string_cookies):
@@ -1112,6 +1235,7 @@ def getSeleniumBrowser(headless=False):
     options = Options()
     if(headless):
         options.headless = True   # run driver in headless mode
+        options.add_argument("window-size=1920,1080")
 
     options.add_argument('log-level=3')   # disable loging for info, and warning levels
 
