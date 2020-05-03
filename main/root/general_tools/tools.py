@@ -1147,6 +1147,7 @@ def find_addresses(text, patterns, country, is_contact_page=False):
         from root.country_tools.colombia.tools import find_Colombian_addresses
         addresses = find_Colombian_addresses(text, patterns, is_contact_page)
     
+<<<<<<< HEAD
     elif(country == "spain"):
         from root.country_tools.spain.tools import find_spanish_addresses
         addresses = find_spanish_addresses(text, patterns, is_contact_page)
@@ -1158,6 +1159,8 @@ def find_addresses(text, patterns, country, is_contact_page=False):
     elif(country == "indonesia"):
         from root.country_tools.indonesia.tools import find_indonesian_addresses
         addresses = find_indonesian_addresses(text, patterns, is_contact_page)
+=======
+>>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1193,6 +1196,7 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_addresses
         purified_addresses = purify_Colombian_addresses(address_list)
+<<<<<<< HEAD
     
     elif(country == "spain"):
         from root.country_tools.spain.tools import purify_spanish_addresses
@@ -1205,6 +1209,8 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "indonesia"):
         from root.country_tools.indonesia.tools import purify_indonesian_addresses
         purified_addresses = purify_indonesian_addresses(address_list)
+=======
+>>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
 
     return purified_addresses
 
@@ -1278,6 +1284,7 @@ def purify_phones(phone_list, country):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_phones
         purified_phones = purify_Colombian_phones(phone_list)
+<<<<<<< HEAD
 
     elif(country == "spain"):
         from root.country_tools.spain.tools import purify_spanish_phones
@@ -1291,6 +1298,8 @@ def purify_phones(phone_list, country):
         from root.country_tools.indonesia.tools import purify_indonesian_phones
         purified_phones = purify_indonesian_phones(phone_list)
 
+=======
+>>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
     return purified_phones
 
 def stringCookiesToDict(string_cookies):
