@@ -1,363 +1,144 @@
 {
-    "domain": "www.zodiacaerospace.com",
+    "domain": "www.unav.es",
     "result": {
-        "logo_url": "img/logo_safran_3_0.png",
-        "web_title": "Safran Aerosystems Safran Cabin and Safran Seats",
+        "logo_url": "/documents/10162/22308435/Logo+unav/a37b94bf-5a57-4174-6d76-57f7858767a3",
+        "web_title": "Portada Universidad de Navarra",
+        "social_pages": {
+            "instagram": "https://www.instagram.com/universidaddenavarra",
+            "twitter": "https://twitter.com/unav",
+            "linkedin": "https://es.linkedin.com/school/universidad-de-navarra-cp/",
+            "facebook": "https://es-es.facebook.com/unav",
+            "youtube": "https://www.youtube.com/user/universidaddenavarra"
+        },
+        "phones": [],
+        "emails": [
+            "info@unav.es"
+        ],
+        "addresses": []
+    }
+}{
+    "domain": "www.ikerlan.es",
+    "result": {
+        "logo_url": "/img/logo-ikerlan-brta.svg",
+        "web_title": "La tecnología nuestra actitud IKERLAN",
+        "social_pages": {
+            "twitter": "https://twitter.com/IKERLANofficial",
+            "linkedin": "http://www.linkedin.com/company/ikerlan/",
+            "youtube": "https://www.youtube.com/c/IKERLANofficial"
+        },
+        "phones": [],
+        "emails": [
+            "gestiondatos@ikerlan.es"
+        ],
+        "addresses": [
+            {
+                "address": "C/ Goiru, 9 20500 Arrasate-Mondragón Gipuzkoa",
+                "components": [],
+                "source": "company-website"
+            },
+            {
+                "address": "Pº. J. M.ª Arizmendiarrieta, 2 20500 Arrasate-Mondragón Gipuzkoa",
+                "components": [],
+                "source": "company-website"
+            }
+        ]
+    }
+}{
+    "domain": "www.svi.co.th",
+    "result": {
+        "web_title": "SVI Public Company Limited",
         "social_pages": {},
         "phones": [],
         "emails": [],
         "addresses": []
     }
-},
-{
-    "domain": "www.groupe-esigelec.org",
+}{
+    "domain": "www.lpn.hanabk.th.com",
     "result": {}
-},
-{
-    "domain": "www.parkerfrance.fr",
-    "result": {}
-},
-{
-    "domain": "www.zodiacaerospace.com",
+}{
+    "domain": "www.ritta.co.th",
     "result": {
-        "logo_url": "img/logo_safran_3_0.png",
-        "web_title": "Safran Aerosystems Safran Cabin and Safran Seats",
+        "logo_url": "images/border/11_06_01_10_17_32_4.jpg",
+        "web_title": "RITTA Design And Construction Service ก่อสร้าง รับก่อสร้าง อาคาร บ้าน ถนน รับเหม",
         "social_pages": {},
         "phones": [],
         "emails": [],
         "addresses": []
     }
-},
-{
-    "domain": "www.chevron.com/products/oronite/contact/europe-africa.html",
-    "result": {}
-},
-{
-    "domain": "www.vinci-construction.com",
+}{
+    "domain": "www.wasso.co.th",
     "result": {
-        "logo_url": "/static/img/logo-vinci.png",
-        "web_title": "VINCI Construction Relever les grands enjeux de la société",
-        "social_pages": {
-            "facebook": "https://www.facebook.com/vinciconstruc",
-            "linkedin": "https://www.linkedin.com/company/3169308",
-            "twitter": "https://twitter.com/vinciconstruc",
-            "youtube": "https://www.youtube.com/user/VinciConstruction1",
-            "instagram": "https://www.instagram.com/vinciconstruction/"
-        },
+        "logo_url": "/images/logos/New-Logo-WA2019.png",
+        "social_pages": {},
         "phones": [],
-        "emails": [],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.forseepower.com",
-    "result": {
-        "logo_url": "/themes/thegobeliners/images/loader.gif",
-        "web_title": "Welcome Smart Energy Solutions",
-        "social_pages": {
-            "twitter": "https://twitter.com/forseepower",
-            "linkedin": "https://www.linkedin.com/company/forsee-power"
-        },
-        "phones": [
-            "33 1 58 91 69 00",
-            "48 713 874 616",
-            "31 6 39 76 46 18",
-            "60 22 13 98 13"
-        ],
         "emails": [
-            "contact@forseepower.com",
-            "richard.yu@forseepower.com",
-            "vincent.deken@forseepower.com",
-            "john.cavlovic@forseepower.com",
-            "han.lie@forseepower.com"
+            "info@wasso.co.th"
         ],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.cnrs.fr",
-    "result": {
-        "logo_url": "/themes/custom/cnrs/logo.svg",
-        "web_title": "Centre national de la recherche scientifique",
-        "social_pages": {
-            "facebook": "https://fr-fr.facebook.com/cnrs.fr/",
-            "twitter": "https://twitter.com/cnrs?lang=fr%20",
-            "instagram": "https://www.instagram.com/cnrs/",
-            "youtube": "https://www.youtube.com/channel/UCAxljKT0ujiJZhGC8Ood7mw",
-            "linkedin": "https://fr.linkedin.com/company/cnrs"
-        },
-        "phones": [],
-        "emails": [],
         "addresses": [
             {
-                "source": "google_geo_api",
-                "address": "3 Rue Michel Ange, 75016 Paris, France",
-                "components": {
-                    "country": "France",
-                    "state": "ÃŽle-de-France",
-                    "city": "Paris",
-                    "street-address": "3, Rue Michel Ange",
-                    "postal-code": "75016"
-                }
-            }
-        ]
-    }
-},
-{
-    "domain": "www.capgemini.com",
-    "result": {
-        "logo_url": "https://www.capgemini.com/wp-content/themes/capgemini-komposite/assets/images/logo.svg",
-        "web_title": "Capgemini Consulting Technology Digital Transformation Services",
-        "social_pages": {
-            "facebook": "https://www.facebook.com/Capgemini/",
-            "twitter": "https://twitter.com/Capgemini",
-            "linkedin": "https://www.linkedin.com/company/157240/",
-            "youtube": "https://www.youtube.com/profile?user=capgeminimedia",
-            "instagram": "https://www.instagram.com/capgemini"
-        },
-        "phones": [],
-        "emails": [],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.ens.fr",
-    "result": {
-        "logo_url": "/sites/default/files/inline-images/logo.jpg",
-        "web_title": "Accueil ENS",
-        "social_pages": {
-            "facebook": "https://www.facebook.com/Ecole.normale.superieure.ulm",
-            "twitter": "https://www.twitter.com/ENS_ULM",
-            "youtube": "https://www.youtube.com/EnsFrEcole_normale_superieure",
-            "instagram": "https://www.instagram.com/normalesup",
-            "linkedin": "https://www.linkedin.com/school/ecolenormalesuperieure/"
-        },
-        "phones": [
-            "01 44 32 31 35",
-            "01 44 32 36 80",
-            "33 (0)1 43 13 61 00",
-            "01 44 32 31 99",
-            "01 44 32 30 25",
-            "33 (0)1 44 32 30 00",
-            "01 44 32 31 70",
-            "33 (0)1 58 07 65 00",
-            "01 44 32 31 08",
-            "01 44 32 31 80"
-        ],
-        "emails": [],
-        "addresses": [
-            {
-                "address": "8, boulevard Jourdan 75014 Paris",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": ", rue Maurice Arnoux 92120 Montrouge",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": "5 rue d’Ulm F-75230 Paris cedex 05",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": "5 rue d’Ulm / 46 rue d’Ulm / 24 rue Lhomond F-75230 Paris cedex 05",
+                "address": "255,93,93,1);} #ap-smart-layerslider-mod_91 .sp-full-screen-button:before{color:#00000",
                 "components": [],
                 "source": "company-website"
             }
         ]
     }
-},
-{
-    "domain": "www.vallourec.com",
+}{
+    "domain": "www.wasso.co.th",
     "result": {
-        "logo_url": "https://www.vallourec.com/-/media/Corporate_WebSite/CORP_Images/CORP_People/Alex-Ramirez.ashx?h=1350&w=1080&hash=77DC17481F8A7A05810752FDF6E0CFE8",
-        "web_title": "Vallourec Smart Tubular Solutions",
-        "social_pages": {
-            "facebook": "https://fr-fr.facebook.com/Vallourec/",
-            "twitter": "https://twitter.com/Vallourec",
-            "linkedin": "https://fr.linkedin.com/company/vallourec",
-            "instagram": "https://www.instagram.com/vallourec/",
-            "youtube": "https://www.youtube.com/channel/UCgIl0xm1ANwajVkfCFvZr0w"
-        },
-        "phones": [],
-        "emails": [],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.mapachehosting.com",
-    "result": {
-        "logo_url": "img/logolargo.png",
-        "web_title": "Mapache Hosting",
-        "social_pages": {
-            "facebook": "https://www.facebook.com/mapachehosting/",
-            "twitter": "https://twitter.com/mapachehosting"
-        },
+        "logo_url": "/images/logos/New-Logo-WA2019.png",
+        "social_pages": {},
         "phones": [],
         "emails": [
-            "info@mapachehosting.com"
+            "info@wasso.co.th"
         ],
         "addresses": []
     }
-},
-{
-    "domain": "www.mapachehosting.comwww.kavoshjoosh.com",
-    "result": {}
-},
-{
-    "domain": "www.dam.fr",
+}{
+    "domain": "www.thaiobayashi.co.th",
     "result": {
-        "logo_url": "/images/Ressources/dam.jpg",
-        "web_title": "DAM Machine spéciale Banc de test Contrôle étanchéité Assemblage",
-        "social_pages": {
-            "linkedin": "http://linkedin.com/company/dam-group-dam-&-dactem-d%C3%A9veloppement-",
-            "youtube": "https://www.youtube.com/channel/UC_Mk_42YZ7glXluv1YaunCw"
-        },
-        "phones": [
-            "33 (0)4 78 26 95 80",
-            "33 (0)4 78 26 95 83"
-        ],
+        "logo_url": "https://www.thaiobayashi.co.th/wp-content/uploads/2016/03/logo-thai-obayashi-with-since.png",
+        "web_title": "Thai Obayashi Corporation",
+        "social_pages": {},
+        "phones": [],
         "emails": [],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.entrepose-echafaudages.fr",
-    "result": {
-        "logo_url": "http://www.entrepose-echafaudages.fr/wp-content/themes/entrepose/images/logo.jpg",
-        "web_title": "ENTREPOSE Echafaudages Léchafaudage notre métier",
-        "social_pages": {
-            "facebook": "https://www.facebook.com",
-            "youtube": "https://www.youtube.com/user/EntreposeEchafaudage"
-        },
-        "phones": [
-            "04 78 90 71 16",
-            "02 40 92 16 76",
-            "03 20 97 86 42",
-            "03 28 60 96 51",
-            "01 48 66 71 44",
-            "04 78 90 27 94",
-            "01 48 79 60 60",
-            "05 61 70 22 93",
-            "04 73 69 85 97",
-            "02 40 92 09 40",
-            "01 57 60 94 05",
-            "03 87 75 51 12",
-            "04 93 73 80 82",
-            "02 98 94 75 99",
-            "02 35 64 16 54",
-            "04 42 05 09 22",
-            "05 56 06 59 11",
-            "01 57 60 94 10",
-            "02 35 64 85 85",
-            "05 49 47 64 95",
-            "03 20 16 41 00",
-            "05 56 38 03 33",
-            "03 87 75 14 74",
-            "01 57 60 94 42",
-            "02 33 52 18 43",
-            "05 61 70 41 70",
-            "04 73 84 42 66",
-            "04 42 05 53 90",
-            "05 49 47 65 30",
-            "03 28 61 01 55",
-            "02 33 52 94 49",
-            "02 98 94 77 45",
-            "04 93 20 90 06"
-        ],
-        "emails": [
-            "meriaux.d@entrepose-echafaudages.fr",
-            "bouty.p@entrepose-echafaudages.fr",
-            "bottelli.s@entrepose-echafaudages.fr",
-            "folguera.w@entrepose-echafaudages.fr",
-            "radenac.s@entrepose-echafaudages.fr",
-            "bruxelle.m@entrepose-echafaudages.fr",
-            "porten.k@entrepose-echafaudages.fr",
-            "bataille.f@entrepose-echafaudages.fr",
-            "info@gie-emi.com",
-            "verstaen.l@entrepose-echafaudages.fr",
-            "chuquet.p@entrepose-echafaudages.fr",
-            "info@entrepose-echafaudages.fr",
-            "dautriche.e@entrepose-echafaudages.fr",
-            "christol.d@entrepose-echafaudages.fr",
-            "raucourt.b@entrepose-echafaudages.fr",
-            "jingand.l@entrepose-echafaudages.fr",
-            "demingeon.f@entrepose-echafaudages.fr"
-        ],
         "addresses": [
             {
-                "address": "IL – 7 rue du Tisserand – BP 90415",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": "7 rue Albin Haller 86000 Poitiers",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": "I – 10 rue de la Chaux Blanche 63800 Cournon d’Auvergne",
-                "components": [],
-                "source": "company-website"
-            },
-            {
-                "address": "I – 46 rue Ampère – BP 86 69684 Chassieu cedex",
+                "address": "11th Fl., Nantawan Building, 161 Ratchadamri Road, Lumpinee, Pathumwan, Bangkok 10330. Thailand",
                 "components": [],
                 "source": "company-website"
             }
         ]
     }
-},
-{
-    "domain": "www.ikea.fr",
+}{
+    "domain": "www.we-inter.com",
     "result": {
-        "logo_url": "https://www.ikea.com/fr/fr/static/ikea-logo.f88b07ceb5a8c356b7a0fdcc9a563d63.svg",
-        "web_title": "Mobilier et Décoration Intérieur et Extérieur IKEA",
-        "social_pages": {
-            "facebook": "https://www.facebook.com/IKEAFrance/",
-            "instagram": "https://www.instagram.com/ikeafrance/",
-            "twitter": "https://twitter.com/ikea_france",
-            "youtube": "https://www.youtube.com/user/ikeafrance"
-        },
+        "logo_url": "images/logo3.gif",
+        "web_title": "WE International Consultants Limited",
+        "social_pages": {},
         "phones": [],
         "emails": [],
-        "addresses": []
+        "addresses": [
+            {
+                "address": "75/43 14th Floor Richmond Tower Sukhumvit 26 Klongton Klongtoey Bangkok 10110 Thailand",
+                "components": [],
+                "source": "company-website"
+            }
+        ]
     }
-},
-{
-    "domain": "www.bollore.com",
+}{
+    "domain": "www.we-inter.com",
     "result": {
-        "logo_url": "https://www.bollore.com/bollo-content/themes/bollore/img/logo.svg",
-        "web_title": "Page daccueil Bolloré",
-        "social_pages": {
-            "linkedin": "https://fr.linkedin.com/company/bollore"
-        },
-        "phones": [
-            "33 (0)1 46 96 42 38",
-            "33 (0)1 46 96 47 85"
-        ],
-        "emails": [
-            "x.leroy@bollore.net",
-            "e.fossorier@bollore.net"
-        ],
-        "addresses": []
-    }
-},
-{
-    "domain": "www.socomec.com",
-    "result": {
-        "logo_url": "/files/live/sites/socomec/templates/files/logo-socomec.png",
-        "web_title": "Socomec Control and safety of low voltage electrical networks",
-        "social_pages": {
-            "facebook": "http://www.facebook.com/pages/Socomec-France/532682573414003?fref=ts#",
-            "twitter": "https://twitter.com/socomec_group",
-            "linkedin": "http://www.linkedin.com/company/socomec",
-            "youtube": "http://www.youtube.com/socomeccorporate"
-        },
+        "logo_url": "images/logo3.gif",
+        "web_title": "WE International Consultants Limited",
+        "social_pages": {},
         "phones": [],
         "emails": [],
-        "addresses": []
+        "addresses": [
+            {
+                "address": "75/43 14th Floor Richmond Tower Sukhumvit 26 Klongton Klongtoey Bangkok 10110 Thailand",
+                "components": [],
+                "source": "company-website"
+            }
+        ]
     }
 }

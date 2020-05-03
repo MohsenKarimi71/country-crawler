@@ -425,6 +425,24 @@ COUNTRY_CONTEXTS = {
         "taiwan" : {
         },
         "thailand" : {
+            "language": "th",
+            "country_code": "66",
+            "phone_phrases": [],
+            "phone_patterns": [],
+            "address_patterns": [
+                "(" + 
+                    "(" +
+                        "((ที่ตั้ง\W)|(เลขที่\W+\d+)|(ชั้น\W+\d+)|([\d\/\-]+\W+หมู่)|(\d+\/\d+)|(\d+\W+Soi)|(\d+th)|(\d+[\w\s]{2,15},)|(\d+\sซ\.))" +
+                    ")" +
+                    "(" +
+                        "[^}{#&$@]{5,120}" +
+                    ")" +
+                    "(" +
+                        "((\D\d{5}(?!\W))|(Thailand))" +
+                    ")"
+                ")",
+            ],
+            "contact_text": ["ติดต่อ", "ติดต่อเรา", "contact"]
         },
         "philippines" : {
         },
@@ -435,13 +453,38 @@ COUNTRY_CONTEXTS = {
         "italy" : {
         },
         "spain": {
+            "language": "es",
             "country_code": "34",
-            "phone_phrases": [],
+            "phone_phrases": ["Teléfono\W", "Tlfno\W", "tel\W", "Tfno\W", "Tlf\W", "Teléf\W"],
             "phone_patterns": ["(\d{3}[\s\-]\d{3}[\s\-]\d{3})",
                                "(\+\d{2}[\s\-]\(?\d{2,3}\)[\s\-]\d{3,4}[\s\-]\d{3,4})",
                                "(\+\d{2}[\s\-]\d{3}[\s\-]\d\s?\d\s?\d\s?\d\s?\d\s?\d)"],
-            "address_patterns": ["Av[\.]?\s.+"],
-            "contact_text": ["contacta"]
+            "address_patterns": [
+                "(" + 
+                    "(" +
+                        "((address)|(Dirección)|(Calle)|(Avenida)|(C\/)|(Pº)|(Avda\.)|(Avinguda))" +
+                    ")" +
+                    "(" +
+                        "[\w\W]{5,70}" +
+                    ")" +
+                    "(" +
+                        "(" + 
+                            "(Spain)|(España)|(Barcelona)|(Asturias)|(Madrid)|(Gipuzkoa)|(Valencia)|" + 
+                            "(Sebastián)|(Alicante)|(Valladolid)|(\D\d{5}(?!\d))" +
+                        ")" +
+                    ")"
+                ")",
+            ],
+            "contact_text": ["contacta", "contacto", "Contact", "Contactar"]
+        },
+        "indonesia": {
+            "language": "id",
+            "country_code": "62",
+            "phone_phrases": [],
+            "phone_patterns": [],
+            "address_patterns": [
+            ],
+            "contact_text": ["Kontak", "contact"]
         }
     }
 }
@@ -1104,6 +1147,17 @@ def find_addresses(text, patterns, country, is_contact_page=False):
         from root.country_tools.colombia.tools import find_Colombian_addresses
         addresses = find_Colombian_addresses(text, patterns, is_contact_page)
     
+    elif(country == "spain"):
+        from root.country_tools.spain.tools import find_spanish_addresses
+        addresses = find_spanish_addresses(text, patterns, is_contact_page)
+
+    elif(country == "thailand"):
+        from root.country_tools.thailand.tools import find_thai_addresses
+        addresses = find_thai_addresses(text, patterns, is_contact_page)
+    
+    elif(country == "indonesia"):
+        from root.country_tools.indonesia.tools import find_indonesian_addresses
+        addresses = find_indonesian_addresses(text, patterns, is_contact_page)
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1139,6 +1193,18 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_addresses
         purified_addresses = purify_Colombian_addresses(address_list)
+    
+    elif(country == "spain"):
+        from root.country_tools.spain.tools import purify_spanish_addresses
+        purified_addresses = purify_spanish_addresses(address_list)
+    
+    elif(country == "thailand"):
+        from root.country_tools.thailand.tools import purify_thai_addresses
+        purified_addresses = purify_thai_addresses(address_list)
+
+    elif(country == "indonesia"):
+        from root.country_tools.indonesia.tools import purify_indonesian_addresses
+        purified_addresses = purify_indonesian_addresses(address_list)
 
     return purified_addresses
 
@@ -1212,6 +1278,19 @@ def purify_phones(phone_list, country):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_phones
         purified_phones = purify_Colombian_phones(phone_list)
+
+    elif(country == "spain"):
+        from root.country_tools.spain.tools import purify_spanish_phones
+        purified_phones = purify_spanish_phones(phone_list)
+    
+    elif(country == "thailand"):
+        from root.country_tools.thailand.tools import purify_thai_phones
+        purified_phones = purify_thai_phones(phone_list)
+    
+    elif(country == "indonesia"):
+        from root.country_tools.indonesia.tools import purify_indonesian_phones
+        purified_phones = purify_indonesian_phones(phone_list)
+
     return purified_phones
 
 def stringCookiesToDict(string_cookies):
