@@ -115,14 +115,14 @@ for p in phones:
                                     print("8 > ", m.group(0))
     print(50 * "*")
 '''
+'''
 from root.country_tools.colombia.tools import recheck_Colombian_address
 for add in addresses:
     print(re.sub("\n", " ", add))
     print(re.sub("\n", " ", recheck_Colombian_address(add)))
     print(50 * "*")
 
-
-
+'''
 
 '''
 def csv2json(csv_file_path):
@@ -152,3 +152,14 @@ data = csv2json(os.path.join("samples", "colombia", "200 Colombia Samples.csv"))
 with open(os.path.join("samples", "colombia", "domain_only.json"), mode="w", encoding="utf-8") as outfile:
     outfile.write(json.dumps(data, indent=4, ensure_ascii=False))
 '''
+
+from root.website_tools.company_website import website_info
+
+domain = "www.ingesertec.com"
+org_name = ""
+language = "es"
+country = "colombia"
+data = website_info(domain, org_name, language, country=country)
+
+with open(os.path.join("temp.json"), encoding="utf-8", mode="a") as outfile:
+    outfile.write(json.dumps(data, indent=4, ensure_ascii=False))

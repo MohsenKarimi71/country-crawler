@@ -432,13 +432,38 @@ COUNTRY_CONTEXTS = {
             "address_patterns": [
                 "(" + 
                     "(" +
-                        "((ที่ตั้ง\W)|(เลขที่\W+\d+)|(ชั้น\W+\d+)|([\d\/\-]+\W+หมู่)|(\d+\/\d+)|(\d+\W+Soi)|(\d+th)|(\d+[\w\s]{2,15},)|(\d+\sซ\.))" +
+                        "(ที่ตั้ง\W)|(address\W)|(Office)|(สำนักงานใหญ่)|(เลขที่\W+\d+)|([^\n]{,30}ชั้น\s?\d+)|([\d\/\-]+\W+หมู่)|" + 
+                        "(\d{1,4}\s?/\s?\d{1,4}\s?)|(\d{1,4}\W+Soi)|(\d{1,3}th)|(\d{1,4}\W+moo)|" + 
+                        "(\d{1,4}[^\d\W]{2,15},)|(\d{1,4}\sซ\.)" +
                     ")" +
                     "(" +
-                        "[^}{#&$@]{5,120}" +
+                        "[^}{#$@\[\]!]{5,120}" +
                     ")" +
                     "(" +
-                        "((\D\d{5}(?!\W))|(Thailand))" +
+                        "(\D\d{5}[^\d]{1,3}Thailand)|(Thailand[^\d]{1,3}\d{5}(?!\d))|(\D\d{5}(?!\d))|(Thailand)|(ประเทศไทย)|(ไทย)|" + 
+                        "(Bangkok)|(กรุงเทพมหานคร)|(กรุงเทพฯ)|(Nakhon[–\s\-]{1,3}Ratchasima)|(นครราชสีมา)|" +
+                        "(Udon[–\s\-]{1,3}Thani)|(อุดรธานี)|(Uthai[–\s\-]{1,3}Thani)|(อุทัยธานี)|(Uttaradit)|(อุตรดิตถ์)|" +
+                        "(Tak)|(ตาก)|(Trang)|(ตรัง)|(Trat)|(ตราด)|(Ubon[–\s\-]{1,3}Ratchathani)|(อุบลราชธานี)|" +
+                        "(Suphan[–\s\-]{1,3}Buri)|(สุพรรณบุรี)|(Surat[–\s\-]{1,3}Thani)|(สุราษฎร์ธานี)|(Surin)|(สุรินทร์)|" +
+                        "(Sing[–\s\-]{1,3}Buri)|(สิงห์บุรี)|(Sisaket)|(ศรีสะเกษ)|(Songkhla)|(สงขลา)|(Sukhothai)|(สุโขทัย)|" +
+                        "(Samut[–\s\-]{1,3}Sakhon)|(สมุทรสาคร)|(Samut[–\s\-]{1,3}Songkhram)|(สมุทรสงคราม)|(Saraburi)|(สระบุรี)|" +
+                        "(Sa[–\s\-]{1,3}Kaeo)|(สระแก้ว)|(Sakon[–\s\-]{1,3}Nakhon)|(สกลนคร)|(Samut[–\s\-]{1,3}Prakan)|(สมุทรปราการ)|" +
+                        "(Ranong)|(ระนอง)|(Ratchaburi)|(ราชบุรี)|(Rayong)|(ระยอง)|(Roi[–\s\-]{1,3}Et)|(ร้อยเอ็ด)|(Satun)|(สตูล)|" +
+                        "(Phuket)|(ภูเก็ต)|(Prachinburi)|(ปราจีนบุรี)|(Prachuap[–\s\-]{1,3}Khiri[–\s\-]{1,3}Khan)|(ประจวบคีรีขันธ์)|" +
+                        "(Phra[–\s\-]{1,3}Nakhon[–\s\-]{1,3}Si[–\s\-]{1,3}Ayutthaya)|(พระนครศรีอยุธยา)|(Phrae)|(แพร่)|" +
+                        "(Phetchabun)|(เพชรบูรณ์)|(Phetchaburi)|(เพชรบุรี)|(Phichit)|(พิจิตร)|(Phitsanulok)|(พิษณุโลก)|(Yala)|(ยะลา)|" +
+                        "(Pattani)|(ปัตตานี)|(Phang[–\s\-]{1,3}Nga)|(พังงา)|(Phatthalung)|(พัทลุง)|(Phayao)|(พะเยา)|" +
+                        "(Nong[–\s\-]{1,3}Khai)|(หนองคาย)|(Nonthaburi)|(นนทบุรี)|(Pathum[–\s\-]{1,3}Thani)|(ปทุมธานี)|" +
+                        "(Nan)|(น่าน)|(Narathiwat)|(นราธิวาส)|(Nong[–\s\-]{1,3}Bua[–\s\-]{1,3}Lamphu)|(หนองบัวลำภู)|" +
+                        "(Nakhon[–\s\-]{1,3}Sawan)|(นครสวรรค์)|(Nakhon[–\s\-]{1,3}Si[–\s\-]{1,3}Thammarat)|(นครศรีธรรมราช)|" +
+                        "(Nakhon[–\s\-]{1,3}Pathom)|(นครปฐม)|(Nakhon[–\s\-]{1,3}Phanom)|(นครพนม)|(Yasothon)|(ยโสธร)|" +
+                        "(Maha[–\s\-]{1,3}Sarakham)|(มหาสารคาม)|(Mukdahan)|(มุกดาหาร)|(Nakhon[–\s\-]{1,3}Nayok)|(นครนายก)|" +
+                        "(Lamphun)|(ลำพูน)|(Loei)|(เลย)|(Lopburi)|(ลพบุรี)|(Mae[–\s\-]{1,3}Hong[–\s\-]{1,3}Son)|(แม่ฮ่องสอน)|" +
+                        "(Kanchanaburi)|(กาญจนบุรี)|(Khon[–\s\-]{1,3}Kaen)|(ขอนแก่น)|(Krabi)|(กระบี่)|(Lampang)|(ลำปาง)|" +
+                        "(Chonburi)|(ชลบุรี)|(Chumphon)|(ชุมพร)|(Kalasin)|(กาฬสินธุ์)|(Kamphaeng[–\s\-]{1,3}Phet)|(กำแพงเพชร)|" +
+                        "(Chanthaburi)|(จันทบุรี)|(Chiang[–\s\-]{1,3}Mai)|(เชียงใหม่)|(Chiang[–\s\-]{1,3}Rai)|(เชียงราย)|" +
+                        "(Buriram)|(บุรีรัมย์)|(Chachoengsao)|(ฉะเชิงเทรา)|(Chai[–\s\-]{1,3}Nat)|(ชัยนาท)|(Chaiyaphum)|(ชัยภูมิ)|" +
+                        "(Amnat[–\s\-]{1,3}Charoen)|(อำนาจเจริญ)|(Ang[–\s\-]{1,3}Thong)|(อ่างทอง)|(Bueng[–\s\-]{1,3}Kan)|(บึงกาฬ)" +
                     ")"
                 ")",
             ],
@@ -480,11 +505,29 @@ COUNTRY_CONTEXTS = {
         "indonesia": {
             "language": "id",
             "country_code": "62",
-            "phone_phrases": [],
+            "phone_phrases": ["Telepon", "Telp"],
             "phone_patterns": [],
             "address_patterns": [
+                "(" +
+                    "(" +
+                        "(Address)|(Alamat)|(Jalan)|(Jln\W)|(Jl\W)|(Menara)|([^\n]{,20}Tower)|(OFFICE)|((?<!\w)KANTOR\W)|((?<!\W)Lt\W)|([^\n]{,40}Blok)|(Graha)|(Taman)" +
+                    ")" +
+                    "(" +
+                        "[^}{$@*<>]{5,150}" +
+                    ")" +
+                    "(" +
+                        "(\D\d{5}(?!\w))|(Indonesia)|" +
+                        "(Bangka([\s\-]Belitung)?)|(Banten)|(Bengkulu)|(Gorontalo)|(Sumatera[–\s\-]{1,3}Utara)|(Sumatera[–\s\-]{1,3}Selatan)|(Sumatera[–\s\-]{1,3}Barat)|(Sumatera)|" + 
+                        "(Jakarta[–\s\-]{1,3}Selatan)|(Jakarta[–\s\-]{1,3}Barat)|(Jakarta[–\s\-]{1,3}Utara)|(Jakarta[–\s\-]{1,3}Pusat)|(Jakarta[–\s\-]{1,3}Timur)|(Jakarta)|" + 
+                        "(Kalimantan[–\s\-]{1,3}Selatan)|(Kalimantan[–\s\-]{1,3}Barat)|(Kalimantan[–\s\-]{1,3}Utara)|(Kalimantan[–\s\-]{1,3}Tengah)|(Kalimantan[–\s\-]{1,3}Timur)|(Kalimantan)|" + 
+                        "(Jawa[–\s\-]{1,3}Barat)|(Jawa[–\s\-]{1,3}Timur)|(Jawa[–\s\-]{1,3}Tengah)|(Papua[–\s\-]{1,3}Barat)|(Papua)|(Yogyakarta)|(\WAceh)|(\WBali)|" + 
+                        "(Riau)|(Lampung)|(Maluku)|(Maluku[–\s\-]{1,3}Utara)|(Nusa Tenggara[–\s\-]{1,3}Barat)|(Nusa Tenggara[–\s\-]{1,3}Timur)|(Nusa Tenggara)|" + 
+                        "(Sulawesi[–\s\-]{1,3}Selatan)|(Sulawesi[–\s\-]{1,3}Barat)|(Sulawesi[–\s\-]{1,3}Utara)|(Sulawesi[–\s\-]{1,3}Tenggara)|(Sulawesi[–\s\-]{1,3}Tengah)|(Sulawesi)" +
+                        "(Daerah\s[^\n]{3,25})"
+                    ")" +
+                ")"
             ],
-            "contact_text": ["Kontak", "contact"]
+            "contact_text": ["Kontak", "Hubungi Kami", "contact", "Kontak Kami", "CONTACT US"]
         }
     }
 }
@@ -1147,7 +1190,6 @@ def find_addresses(text, patterns, country, is_contact_page=False):
         from root.country_tools.colombia.tools import find_Colombian_addresses
         addresses = find_Colombian_addresses(text, patterns, is_contact_page)
     
-<<<<<<< HEAD
     elif(country == "spain"):
         from root.country_tools.spain.tools import find_spanish_addresses
         addresses = find_spanish_addresses(text, patterns, is_contact_page)
@@ -1159,8 +1201,7 @@ def find_addresses(text, patterns, country, is_contact_page=False):
     elif(country == "indonesia"):
         from root.country_tools.indonesia.tools import find_indonesian_addresses
         addresses = find_indonesian_addresses(text, patterns, is_contact_page)
-=======
->>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
+
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1196,7 +1237,6 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_addresses
         purified_addresses = purify_Colombian_addresses(address_list)
-<<<<<<< HEAD
     
     elif(country == "spain"):
         from root.country_tools.spain.tools import purify_spanish_addresses
@@ -1209,8 +1249,6 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "indonesia"):
         from root.country_tools.indonesia.tools import purify_indonesian_addresses
         purified_addresses = purify_indonesian_addresses(address_list)
-=======
->>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
 
     return purified_addresses
 
@@ -1284,7 +1322,6 @@ def purify_phones(phone_list, country):
     elif(country == "colombia"):
         from root.country_tools.colombia.tools import purify_Colombian_phones
         purified_phones = purify_Colombian_phones(phone_list)
-<<<<<<< HEAD
 
     elif(country == "spain"):
         from root.country_tools.spain.tools import purify_spanish_phones
@@ -1298,8 +1335,6 @@ def purify_phones(phone_list, country):
         from root.country_tools.indonesia.tools import purify_indonesian_phones
         purified_phones = purify_indonesian_phones(phone_list)
 
-=======
->>>>>>> 0daf9e05d7446e5e70c23c63b1e9afef4d26ef97
     return purified_phones
 
 def stringCookiesToDict(string_cookies):

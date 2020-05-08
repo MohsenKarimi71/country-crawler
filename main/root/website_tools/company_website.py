@@ -42,9 +42,12 @@ def find_second_page_url(main_page_soup, url, country_context):
 def get_website_logo(soup_obj):
     if(soup_obj):
         body = soup_obj.body
-        img = body.find('img')
-        if img:
-            return img.get('src')
+        if(body):
+            img = body.find('img')
+            if img:
+                return img.get('src')
+            else:
+                return None
         else:
             return None
 
@@ -107,6 +110,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
         text = "\n".join(string for string in contact_page_soup.stripped_strings)
         website_data["addresses"] = find_addresses(text[:20000], country_context["address_patterns"], country, is_contact_page=True)
         google_pin_address = get_google_pin_address(contact_page_soup, url, language)
+
         website_data["addresses"] += google_pin_address
 
         website_data["phones"] = find_phones(text, country_context["phone_patterns"], country)
@@ -140,7 +144,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
 
     return website_data
 
-def website_info(domain, org_name, language, country="global"):
+def website_info(domain, org_name, country="global"):
     #domain = validate_domain(domain)
     print('>>>>>>>>>>>>>>>>>> NOW website_info: ', domain, 'Country :', country)
     if domain:
@@ -149,14 +153,16 @@ def website_info(domain, org_name, language, country="global"):
     else:
         return {"domain": domain, "result": {}}
     
-    country_context = load_country_context(country, add_with_global_setting=False) if country is not None else load_country_context("global")
-
+    country_context = load_country_context(country, add_with_global_setting=False) if country else load_country_context("global")
+    language = country_context.get("language", "en")
     # getting main-page and contact-page soup object
     main_page_soup = None
     contact_page_soup = None
     res = getHtmlResponse(url, use_proxy=False)
     if(res):
+        print("status code >>> ", res.status_code)
         final_url = res.url
+        print("final_url: ", final_url)
         main_page_soup = getSoup(res)
         if(main_page_soup):
             # trying to find contact page url

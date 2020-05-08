@@ -2,6 +2,7 @@ import openpyxl
 import json
 import re
 import os
+from root.general_tools.tools import load_country_context
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,27 +76,18 @@ for p in phones:
                     print("4 > ", m.group(0))
     print(50 * "*")
 '''
-
-address_patterns = [
-    "(" + 
-        "(" +
-            "((ที่ตั้ง\W)|(เลขที่\W+\d+)|(ชั้น\W+\d+)|([\d\/\-]+\W+หมู่)|(\d+\/\d+)|(\d+\W+Soi)|(\d+th)|(\d+[\w\s]{2,15},)|(\d+\sซ\.))" +
-        ")" +
-        "(" +
-            "[\w\W]{5,120}" +
-        ")" +
-        "(" +
-            "((\D\d{5}(?!\W))|(Thailand))" +
-        ")"
-    ")"
-]
 '''
+address_patterns = load_country_context("thailand", add_with_global_setting=False)["address_patterns"]
+
 for add in addresses:
-    print(add.replace("\n", " "), " >>> ", len(add))
     m = re.search(address_patterns[0], add, flags=re.IGNORECASE)
-    if(m):
+    if(not m):
+        print(add.replace("\n", " "), " >>> ", len(add))
+        print(50 * "*")
+    elif(add != m.group(0)):
+        print(add.replace("\n", " "), " >>> ", len(add))
         print(m.group(0).replace("\n", " "))
-    print(50 * "*")
+        print(50 * "*")
 '''
 
 '''
@@ -128,12 +120,14 @@ with open(os.path.join("samples", "thailand", "domain_only.json"), mode="w", enc
 '''
 
 from root.website_tools.company_website import website_info
+samples = json.loads(open(os.path.join("samples", "thailand", "samples.json"), "r", encoding="utf-8").read())
 
-domain = "www.we-inter.com"
-org_name = ""
-language = "th"
-country = "thailand"
-data = website_info(domain, org_name, language, country=country)
-
-with open(os.path.join("temp.json"), encoding="utf-8", mode="a") as outfile:
-    outfile.write(json.dumps(data, indent=4, ensure_ascii=False))
+for dic in samples[192:194]:
+    if(dic["Website"] != "-"):
+        data = website_info(dic["Website"], dic["Organization Name"], "thailand")
+        if(data["result"].get("addresses")):
+            print(json.dumps(data["result"]["addresses"], indent=4, ensure_ascii=False))
+        else:
+            print("No address Found")
+        print(50 * "*", "\n")
+    

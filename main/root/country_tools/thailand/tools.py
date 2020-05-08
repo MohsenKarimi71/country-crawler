@@ -1,7 +1,7 @@
 from root.general_tools.tools import get_google_formatted_address_using_address
 import re
 
-to_be_deleted_from_address = []
+to_be_deleted_from_address = ["/"]
 number_founder_pattern = "[^\d]?(\d+)[^\d]?"
 
 def find_thai_addresses(text, patterns, is_contact_page=False):
@@ -20,37 +20,29 @@ def find_thai_addresses(text, patterns, is_contact_page=False):
 def get_thai_unique_addresses(address_list):
     unique_addresses = []
     if(len(address_list) > 1):
-        filtered_add_list = [" " + add for add in address_list]
-        filtered_add_list = [add.lower() for add in filtered_add_list]
-        temp_list = [add for add in filtered_add_list]
-        filtered_add_list = []
-        # deleting common words
-        for add in temp_list:
+        filtered_add_list = [add.lower() for add in address_list]
+
+        for index, add in enumerate(filtered_add_list):
+            # deleting common words
             for phrase in to_be_deleted_from_address:
                 add = add.replace(phrase, " ")
-            filtered_add_list.append(add)
-        temp_list = [add for add in filtered_add_list]
-        filtered_add_list = []
-        for add in temp_list:
-            add = add.split(",")
-            filtered_add_list.append(add)
-        
-        temp_list = [add for add in filtered_add_list]
-        filtered_add_list = []
-        # extracting all numbers
-        for splitted_list in temp_list:
+
+            # splitting addresses on space
+            splitted_list = add.split(" ")
+
+            # extracting all numbers
             word_list = []
             for word in splitted_list:
                 m = re.search(number_founder_pattern, word)
                 if(m):
                     word_list.append(m.group(1))
-                    word = re.sub(m.group(0), " ", word)
+                    word = word.replace(m.group(0), " ")
                 word = (re.sub("\s{2,}", " ", word)).strip()
                 if(not word.endswith(".")):
                     if(len(word) >= 2):
                         word_list.append(word)
             word_list = list(set(word_list))
-            filtered_add_list.append(word_list)
+            filtered_add_list[index] = word_list
 
         # getting unique addresses
         max_length = 0
@@ -97,12 +89,54 @@ def get_thai_unique_addresses(address_list):
 def get_thai_address_parts(address, language="th"):
     return {"address":address, "components":[], "source":"company-website"}
 
+def recheck_thai_addresses(address):
+    digits = re.sub("\D", "", address)
+    if(len(digits) > len(address)/2):
+        return None
+
+    if(not "ที่ตั้ง" in address and not "address" in address and not "Office" in address and not "สำนักงานใหญ่" in address):
+        if(":" in address):
+            return None
+
+    if(re.search("(\d{1,4}/\d{1,4}/\d{1,4})", address)):
+        return None
+
+    address = re.sub('\"|\(|\)', " ", address)
+    
+    m = re.search("ที่ตั้ง[^\w]+", address, flags=re.IGNORECASE)
+    if(m):
+        address = address.replace(m.group(0), "")
+    
+    m = re.search("address[^\w]+", address, flags=re.IGNORECASE)
+    if(m):
+        address = address.replace(m.group(0), "")
+    
+    m = re.search("Office[^\w]+", address, flags=re.IGNORECASE)
+    if(m):
+        address = address.replace(m.group(0), "")
+
+    m = re.search("สำนักงานใหญ่[^\w]+", address, flags=re.IGNORECASE)
+    if(m):
+        address = address.replace(m.group(0), "")
+        
+    address = address.replace("\\n", ", ")
+    address = re.sub(",\W*,", ", ", address)
+    address = re.sub(" ,", ",", address)
+    address = re.sub("\s{2,}", " ", address)
+    return address
+
 def purify_thai_addresses(address_list):
     '''
     get a list of thai addresses and return a list of unique
     and splitted addresses extracted from input addresses 
     '''
-    unique_addresses = get_thai_unique_addresses(address_list)
+    rechecked_addresses = []
+    for add in address_list:
+        rechecked_address = recheck_thai_addresses(add)
+        if(rechecked_address):
+            rechecked_addresses.append(rechecked_address)
+
+    unique_addresses = get_thai_unique_addresses(rechecked_addresses)
 
     splitted_addresses = []
     for add in unique_addresses:
