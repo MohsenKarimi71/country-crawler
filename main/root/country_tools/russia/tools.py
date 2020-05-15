@@ -229,38 +229,6 @@ def find_russian_phones(text, patterns):
     phones = [phone.replace("\n", "") for phone in phones]
     return phones
 
-def purify_russian_phones(original_phone_list, composite_mode=False):
-    '''
-    This function takes a list of phone numbers as input, extracts all unique 
-    phone numbers from input list and finally return a list of unique phone numbers.
-    '''
-    if(len(original_phone_list) > 1):
-        unique_phones = []
-        filtered_list = []
-        # adding phones to filtered_list
-        if(composite_mode):
-            for dic in original_phone_list:
-                t = re.sub("\D", "", dic["phone"])
-                filtered_list.append(t[-10:])
-        else:
-            for phone in original_phone_list:
-                t = re.sub("\D", "", phone)
-                filtered_list.append(t[-10:])
-
-        unique_phones.append({"original": original_phone_list[0], "filtered":filtered_list[0]})
-        for i in range(1, len(original_phone_list)):
-            is_unique = True
-            for dic in unique_phones:
-                if(filtered_list[i] == dic["filtered"]):
-                    is_unique = False
-                    break
-            if(is_unique):
-                unique_phones.append({"original": original_phone_list[i], "filtered":filtered_list[i]})
-
-        return [dic["original"] for dic in unique_phones]
-    else:
-        return original_phone_list
-
 
 def get_russian_country_module_composite_data(country_module_data, composite_data):
     if(country_module_data.get("legal_name")):

@@ -60,7 +60,7 @@ def get_domain_contact_page_text(domain):
         data["contact_page_text"] = "\n".join(string for string in contact_page_soup.stripped_strings)
     #print(data["contact_page_text"])
     return data
-
+"""
 ##################################################################### INDIA ###################################################################
 #************************************************************************#
 
@@ -1374,7 +1374,7 @@ for p in phones:
     print(50 * "*")
 '''
 
-
+'''
 from root.website_tools.company_website import website_info
 
 domain = "www.socomec.com"
@@ -1385,7 +1385,7 @@ data = website_info(domain, org_name, language, country=country)
 
 with open(os.path.join("temp.json"), encoding="utf-8", mode="a") as outfile:
     outfile.write(json.dumps(data, indent=4, ensure_ascii=False))
-
+'''
 
 svg_logo_sample = "http://www.cnrs.fr/themes/custom/cnrs/logo.svg"
 '''
@@ -1397,3 +1397,18 @@ for i, add in enumerate(addresses):
         print(re.sub("\n", " ", recheck_chinese_address(add)))
         print(50 * "*")
 '''
+"""
+p = [
+    "+(035)123 555 5551",
+    "+ 35 1 23 555 663",
+    "26 555 222 333",
+    "+12 2222 111 333",
+    "+0 12-3555-5551",
+    "09-26-555-22-2333"
+]
+
+from root.general_tools.tools import purify_phones
+
+g = purify_phones(p)
+for i in g:
+    print(i)

@@ -137,7 +137,7 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
             website_data["addresses"].append({"source": "google_geo_api", "address":google_data["formatted_address"], "components":google_data["address_components"]})
     
     if(website_data["phones"]):
-        website_data["phones"] = purify_phones(website_data["phones"], country)
+        website_data["phones"] = purify_phones(website_data["phones"], composite_mode=False)
     
     if(website_data["emails"]):
         website_data["emails"] = purify_emails(website_data["emails"])
@@ -147,13 +147,13 @@ def get_website_data(main_page_soup, contact_page_soup, country, country_context
 def website_info(domain, org_name, country="global"):
     #domain = validate_domain(domain)
     print('>>>>>>>>>>>>>>>>>> NOW website_info: ', domain, 'Country :', country)
-    if domain:
+    if domain != "-":
         url = "http://" + domain
         print("url >>> ", url)
     else:
         return {"domain": domain, "result": {}}
     
-    country_context = load_country_context(country, add_with_global_setting=False) if country else load_country_context("global")
+    country_context = load_country_context(country, add_with_global_setting=True) if country else load_country_context("global")
     language = country_context.get("language", "en")
     # getting main-page and contact-page soup object
     main_page_soup = None

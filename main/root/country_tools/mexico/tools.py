@@ -258,30 +258,6 @@ def find_mexican_phones(text, patterns):
     for pattern in patterns:
         items = re.findall(pattern, text)
         for i in items:
-            phones.append(i)
+            if(("(" in i and ")" in i) or (not "(" in i and not ")" in i)):
+                phones.append(i)
     return list(set(phones))
-
-def purify_mexican_phones(phone_list):
-    '''
-    This function takes a list of phone numbers as input, extracts all unique 
-    phone numbers from input list and finally return a list of unique phone numbers.
-    '''
-    unique_phones = []
-    if(phone_list):
-        if(len(phone_list) == 1):
-            return phone_list
-        else:
-            ten_digit_set = set()
-            new_phones = []
-
-            for phone in phone_list:
-                numbers = re.sub("\D", "", phone).strip()[-10:]
-                new_phones.append({"phone": phone, "numbers":numbers})
-            for dic in new_phones:
-                if(not dic["numbers"] in ten_digit_set):
-                    if(("(" in dic["phone"] and ")" in dic["phone"]) or (not "(" in dic["phone"] and not ")" in dic["phone"])):
-                        ten_digit_set.add(dic["numbers"])
-                        unique_phones.append(dic["phone"])
-            return unique_phones
-    else:
-        return []

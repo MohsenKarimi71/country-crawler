@@ -33,13 +33,13 @@ COUNTRY_CONTEXTS = {
             "contact_text": ["contact", "Contact"]
         },
         "global": {
-            "phone_phrases": ["phone:", "Phone:", "Tel:"],
+            "phone_phrases": ["phone:", "Tel:"],
             "phone_patterns": ["\+?\d{1,3}[\s|\(]\(?\d{3,4}\)?\s\d{2,3}[\s\-\.]?\d{2}\-?\d{2}",
                                "\+\d{1,3}[\s\-]?\d{1,3}[\s\-]?\d{3,4}[\s\-]?\d{3,4}",
                                "\(\d{3}\)\s\d\s?\s?\s?\d\s?\d[\s\-]\d{4}",
                                "\(\+?\d+\)\s\d+[\s\-]\d{3}[\s\-]?\d+",
                                "\d{3}[\s\-]\d{3}[\s\-]\d{2}[\s\-]?\d{2}"],
-            "address_patterns": ["address:\w{,100}", "Address:\w{,100}"],
+            "address_patterns": [],
             "contact_text": ["contact", "contacto", "contacts", "contact us"]
         },
         "brazil": {
@@ -420,7 +420,29 @@ COUNTRY_CONTEXTS = {
             ],
             "contact_text": ["contactenos", "Contáctenos", "CONTACTO", "Contáctanos"]
         },
-        "korea" : {
+        "korea": {
+            "language": "kr",
+            "country_code": "82",
+            "phone_phrases": [],
+            "phone_patterns": ["\+82[\s\-\d\(\)]{12,16}", "\d{2,3}[\.\-\s]{1,2}\d{3,4}[\.\-\s]{1,2}\d{4}"],
+            "address_patterns": [
+                "(" +
+                    "(" + 
+                        "(주소\s?:)|(ADDRESS)|(office)|([^\n]{2,30}시\W)|(\s\d{5}\W)|" +
+                        "(충청도)|(Chungcheong)|(강원도)|(Gangwon)|(경기도)|(Gyeonggi)|(경상도)|(Gyeongsang)|" +
+                        "(함경도)|(Hamgyŏng)|(황해도)|(Hwanghae)|(전라도)|(Jeolla)|(평안도)|(P'yŏngan)|" + 
+                        "([^\n]{2,35}-ro)|([^\n]{2,35}-gu)|(\dth\W)" +
+                    ")" +
+                    "(" + 
+                        "[^@\{\}$%!;?<>\[\]\"]{3,80}" +
+                    ")" +
+                    "(" + 
+                        "(\d호[^\n]{,20})|(\W\d{5}(?!\W))|(Korea)|(\d+층)" +
+                    ")" +
+                ")",
+
+            ],
+            "contact_text": ["견적 문의", "견적문의", "고객지원"]
         },
         "taiwan" : {
         },
@@ -884,6 +906,24 @@ def getDomainTitle(domain):
         print("Error in getDomainTitle() for url >>>", domain, "<<<")
         return domain_title
 
+def load_country_context(country="global", add_with_global_setting=True):
+    country_context = COUNTRY_CONTEXTS.get('countries').get(country)
+    temp_country_context = {}
+    for k in country_context.keys():
+        temp_country_context[k] = country_context[k]
+
+    if not country_context:
+        temp_country_context = {}
+
+    if country != "global" and add_with_global_setting:
+        global_context = COUNTRY_CONTEXTS.get('countries').get("global")
+        for field in global_context:
+            if temp_country_context.get(field):
+                temp_country_context[field] = list(set(temp_country_context[field] + global_context[field]))
+            else:
+                temp_country_context[field] = global_context[field]
+    return temp_country_context
+
 
 def getGoogleDetails(p_id, language):
     try:
@@ -978,7 +1018,6 @@ def getGoogleMatchedData(org_name, domain, language):
 
     return result
 
-
 def getGoogleSourceInfo(sources, url):
     gm_kw_regex = re.compile(r'!2s.*!5e0')
     data = []
@@ -1041,7 +1080,6 @@ def get_google_pin_address(soup_obj, url, language):
 
     return addresses
 
-
 def get_google_formatted_address_using_address(address, language):
     search_url = geocoding_search_url.format(address, geocoding_api_key, language)
     google_data = json.loads(getHtmlResponse(search_url).text)
@@ -1053,20 +1091,6 @@ def get_google_formatted_address_using_address(address, language):
                     dic_data = {"address": result["formatted_address"], "components": get_google_address_component(result["address_components"])}
                     return dic_data
     return None
-
-
-def load_country_context(country="global", add_with_global_setting=True):
-    country_context = COUNTRY_CONTEXTS.get('countries').get(country)
-    if not country_context:
-        country_context = {}
-    if country != "global" and add_with_global_setting:
-        global_context = COUNTRY_CONTEXTS.get('countries').get("global")
-        for field in global_context:
-            if country_context.get(field):
-                country_context[field] += global_context[field]
-            else:
-                country_context[field] = global_context[field]
-    return country_context
 
 
 def find_emails(text):
@@ -1104,57 +1128,89 @@ def purify_emails(original_email_list, composite_mode=False):
     else:
         return original_email_list
 
-def purify_phones_global(original_phone_list, composite_mode=False):
+def find_phones(text, patterns, country):
+    phones = []
+    if(country == "brazil"):
+        from root.country_tools.brazil.tools import find_brazilian_phones
+        phones = find_brazilian_phones(text, patterns)
+    
+    elif(country == "russia"):
+        from root.country_tools.russia.tools import find_russian_phones
+        phones = find_russian_phones(text, patterns)
+
+    elif(country == "vietnam"):
+        from root.country_tools.vietnam.tools import find_vietnamese_phones
+        phones = find_vietnamese_phones(text, patterns)
+    
+    elif(country == "mexico"):
+        from root.country_tools.mexico.tools import find_mexican_phones
+        phones = find_mexican_phones(text, patterns)
+    
+    elif(country == "india"):
+        from root.country_tools.india.tools import find_indian_phones
+        phones = find_indian_phones(text, patterns)
+    
+    elif(country == "china"):
+        from root.country_tools.china.tools import find_chinese_phones
+        phones = find_chinese_phones(text, patterns)
+    
+    elif(country == "france"):
+        from root.country_tools.france.tools import find_french_phones
+        phones = find_french_phones(text, patterns)
+    
+    elif(country == "colombia"):
+        from root.country_tools.colombia.tools import find_Colombian_phones
+        phones = find_Colombian_phones(text, patterns)
+
+    elif(country == "spain"):
+        from root.country_tools.spain.tools import find_spanish_phones
+        phones = find_spanish_phones(text, patterns)
+    
+    elif(country == "thailand"):
+        from root.country_tools.thailand.tools import find_thai_phones
+        phones = find_thai_phones(text, patterns)
+
+    elif(country == "indonesia"):
+        from root.country_tools.indonesia.tools import find_indonesian_phones
+        phones = find_indonesian_phones(text, patterns)
+
+    elif(country == "korea"):
+        from root.country_tools.korea.tools import find_korean_phones
+        phones = find_korean_phones(text, patterns)
+
+    return phones
+
+
+def purify_phones(original_phone_list, composite_mode=False):
+    def naked_item(item):
+        return re.sub("\D", "", item).lstrip("0")
+
     if(len(original_phone_list) > 1):
         unique_phones = []
-        filtered_list = []
+        unique_phones_temp = []
         # adding phones to filtered_list
         if(composite_mode):
-            for dic in original_phone_list:
-                t = re.sub("\D", "", dic["phone"])
-                filtered_list.append(t[-10:])
+            filtered_list = [naked_item(dic["phone"]) for dic in original_phone_list]
+
         else:
-            for phone in original_phone_list:
-                t = re.sub("\D", "", phone)
-                filtered_list.append(t[-10:])
+            filtered_list = [naked_item(phone) for phone in original_phone_list]
 
-        unique_phones.append({"original": original_phone_list[0], "filtered":filtered_list[0]})
-        for i in range(1, len(original_phone_list)):
+        for i, phone in enumerate(filtered_list):
             is_unique = True
-            for dic in unique_phones:
-                if(filtered_list[i] == dic["filtered"]):
+            for naked_phone in unique_phones_temp:
+                if(phone[-10:] in naked_phone):
                     is_unique = False
-                    break
+                    j = unique_phones_temp.index(naked_phone)
+                    if(len(naked_item(original_phone_list[i])) > len(naked_phone)):
+                        unique_phones_temp[j] = phone
+                        unique_phones[j] = original_phone_list[i]
+            
             if(is_unique):
-                unique_phones.append({"original": original_phone_list[i], "filtered":filtered_list[i]})
-
-        return [dic["original"] for dic in unique_phones]
+                unique_phones_temp.append(phone)
+                unique_phones.append(original_phone_list[i])
+        return unique_phones
     else:
         return original_phone_list
-
-def get_unique_social_media_links(original_social_links_list, composite_mode=True):
-    if(len(original_social_links_list) > 1):
-        original_unique_socials = []
-        filtered_unique_socials = []
-        filtered_socials = []
-        # adding url to 'filtered_socials'
-        if(composite_mode):
-            for dic in original_social_links_list:
-                filtered_socials.append(dic["url"].strip("/").split(".com")[1].strip())
-        else:
-            for url in original_social_links_list:
-                filtered_socials.append(url.strip("/").split(".com")[1].strip())
-
-        for index, url in enumerate(filtered_socials):
-            if(not url in filtered_unique_socials):
-                filtered_unique_socials.append(url)
-                original_unique_socials.append(original_social_links_list[index])
-
-        return original_unique_socials
-        
-    else:
-        return original_social_links_list
-
 
 def find_addresses(text, patterns, country, is_contact_page=False):
     addresses = []
@@ -1202,6 +1258,9 @@ def find_addresses(text, patterns, country, is_contact_page=False):
         from root.country_tools.indonesia.tools import find_indonesian_addresses
         addresses = find_indonesian_addresses(text, patterns, is_contact_page)
 
+    elif(country == "korea"):
+        from root.country_tools.korea.tools import find_korean_addresses
+        addresses = find_korean_addresses(text, patterns, is_contact_page)
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1249,93 +1308,107 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "indonesia"):
         from root.country_tools.indonesia.tools import purify_indonesian_addresses
         purified_addresses = purify_indonesian_addresses(address_list)
+    
+    elif(country == "korea"):
+        from root.country_tools.korea.tools import purify_korean_addresses
+        purified_addresses = purify_korean_addresses(address_list)
 
     return purified_addresses
 
+def get_unique_addresses(address_list, to_be_deleted_from_address):
+    print("Getting unique addresses... ", len(address_list))
+    number_regex = "[^\d]?(\d+)[^\d]?"
+    unique_addresses = []
+    if(len(address_list) > 1):
+        filtered_add_list = [add.lower() for add in address_list]
 
-def find_phones(text, patterns, country):
-    phones = []
-    if(country == "brazil"):
-        from root.country_tools.brazil.tools import find_brazilian_phones
-        phones = find_brazilian_phones(text, patterns)
-    
-    elif(country == "russia"):
-        from root.country_tools.russia.tools import find_russian_phones
-        phones = find_russian_phones(text, patterns)
+        for index, add in enumerate(filtered_add_list):
+            # deleting common words
+            for phrase in to_be_deleted_from_address:
+                add = add.replace(phrase, " ")
 
-    elif(country == "vietnam"):
-        from root.country_tools.vietnam.tools import find_vietnamese_phones
-        phones = find_vietnamese_phones(text, patterns)
-    
-    elif(country == "mexico"):
-        from root.country_tools.mexico.tools import find_mexican_phones
-        phones = find_mexican_phones(text, patterns)
-    
-    elif(country == "india"):
-        from root.country_tools.india.tools import find_indian_phones
-        phones = find_indian_phones(text, patterns)
-    
-    elif(country == "china"):
-        from root.country_tools.china.tools import find_chinese_phones
-        phones = find_chinese_phones(text, patterns)
-    
-    elif(country == "france"):
-        from root.country_tools.france.tools import find_french_phones
-        phones = find_french_phones(text, patterns)
-    
-    elif(country == "colombia"):
-        from root.country_tools.colombia.tools import find_Colombian_phones
-        phones = find_Colombian_phones(text, patterns)
+            # splitting addresses on space
+            splitted_list = add.split(" ")
 
-    return phones
+            # extracting all numbers
+            word_list = []
+            for word in splitted_list:
+                m = re.search(number_regex, word)
+                if(m):
+                    word_list.append(m.group(1))
+                    word = word.replace(m.group(0), " ")
+                word = (re.sub("\s{2,}", " ", word)).strip()
+                if(not word.endswith(".")):
+                    if(len(word) >= 2):
+                        word_list.append(word)
+            word_list = list(set(word_list))
+            filtered_add_list[index] = word_list
 
-def purify_phones(phone_list, country):
-    purified_phones = []
-    if(country == "brazil"):
-        from root.country_tools.brazil.tools import purify_brazilian_phones
-        purified_phones = purify_brazilian_phones(phone_list)
-    
-    elif(country == "russia"):
-        from root.country_tools.russia.tools import purify_russian_phones
-        purified_phones = purify_russian_phones(phone_list)
+        # getting unique addresses
+        max_length = 0
+        max_index = 0
+        for i in range(len(filtered_add_list)):
+            if(len(filtered_add_list[i]) > max_length):
+                max_length = len(filtered_add_list[i])
+                max_index = i
+        unique_addresses.append({"original":address_list[max_index], "splitted":filtered_add_list[max_index]})
 
-    elif(country == "vietnam"):
-        from root.country_tools.vietnam.tools import purify_vietnamese_phones
-        purified_phones = purify_vietnamese_phones(phone_list)
-    
-    elif(country == "mexico"):
-        from root.country_tools.mexico.tools import purify_mexican_phones
-        purified_phones = purify_mexican_phones(phone_list)
-    
-    elif(country == "india"):
-        from root.country_tools.india.tools import purify_indian_phones
-        purified_phones = purify_indian_phones(phone_list)
+        for index1, splitted_list in enumerate(filtered_add_list):
+            if(len(splitted_list) > 0):
+                is_unique = True
+                if(index1 != max_index):
+                    add_results = {"original":address_list[index1], "splitted":splitted_list}
+                    for index2, unq_dic in enumerate(unique_addresses):
+                        if(len(unq_dic["splitted"]) > len(splitted_list)):
+                            score = 0
+                            for word in splitted_list:
+                                if(word in unq_dic["splitted"]):
+                                    score += 1
+                            if(score / len(splitted_list)) > 0.6:
+                                unique_addresses[index2]["splitted"] = list(set(unique_addresses[index2]["splitted"] + splitted_list))
+                                is_unique = False
+                                break
+                        else:
+                            score = 0
+                            for word in unq_dic["splitted"]:
+                                if(word in splitted_list):
+                                    score += 1
+                            if(score / len(unq_dic["splitted"])) > 0.6:
+                                unique_addresses[index2]["splitted"] = list(set(unique_addresses[index2]["splitted"] + splitted_list))
+                                unique_addresses[index2]["original"] = address_list[index1]
+                                is_unique = False
+                                break
+                    if(is_unique):
+                        unique_addresses.append(add_results)
+            
+        unique_addresses = [dic["original"] for dic in unique_addresses]
+        return unique_addresses
+    else:
+        return address_list
 
-    elif(country == "china"):
-        from root.country_tools.china.tools import purify_chinese_phones
-        purified_phones = purify_chinese_phones(phone_list)
-    
-    elif(country == "france"):
-        from root.country_tools.france.tools import purify_french_phones
-        purified_phones = purify_french_phones(phone_list)
-    
-    elif(country == "colombia"):
-        from root.country_tools.colombia.tools import purify_Colombian_phones
-        purified_phones = purify_Colombian_phones(phone_list)
+def get_unique_social_media_links(original_social_links_list, composite_mode=True):
+    if(len(original_social_links_list) > 1):
+        original_unique_socials = []
+        filtered_unique_socials = []
+        filtered_socials = []
+        # adding url to 'filtered_socials'
+        if(composite_mode):
+            for dic in original_social_links_list:
+                filtered_socials.append(dic["url"].strip("/").split(".com")[1].strip())
+        else:
+            for url in original_social_links_list:
+                filtered_socials.append(url.strip("/").split(".com")[1].strip())
 
-    elif(country == "spain"):
-        from root.country_tools.spain.tools import purify_spanish_phones
-        purified_phones = purify_spanish_phones(phone_list)
-    
-    elif(country == "thailand"):
-        from root.country_tools.thailand.tools import purify_thai_phones
-        purified_phones = purify_thai_phones(phone_list)
-    
-    elif(country == "indonesia"):
-        from root.country_tools.indonesia.tools import purify_indonesian_phones
-        purified_phones = purify_indonesian_phones(phone_list)
+        for index, url in enumerate(filtered_socials):
+            if(not url in filtered_unique_socials):
+                filtered_unique_socials.append(url)
+                original_unique_socials.append(original_social_links_list[index])
 
-    return purified_phones
+        return original_unique_socials
+        
+    else:
+        return original_social_links_list
+
 
 def stringCookiesToDict(string_cookies):
     '''

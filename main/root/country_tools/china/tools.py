@@ -128,32 +128,6 @@ def find_chinese_phones(text, patterns):
             phones.append(item)
     return list(set(phones))
 
-def purify_chinese_phones(phone_list):
-    '''
-    This function takes a list of phone numbers as input, extracts all unique 
-    phone numbers from input list and finally return a list of unique phone numbers.
-    '''
-    if(phone_list):
-        if(len(phone_list) == 1):
-            return phone_list
-        else:
-            unique_phones = []
-            filtered_list = [re.sub("[\D]", "", phone)[-10:] for phone in phone_list]
-
-            unique_phones.append({"original": phone_list[0], "filtered":filtered_list[0]})
-            for i in range(1, len(phone_list)):
-                is_unique = True
-                for dic in unique_phones:
-                    if(filtered_list[i] == dic["filtered"]):
-                        is_unique = False
-                        break
-                if(is_unique):
-                    unique_phones.append({"original": phone_list[i], "filtered":filtered_list[i]})
-            return [dic["original"] for dic in unique_phones]
-    else:
-        return []
-
-
 
 def pick_matched_case_for_composite(country_module_data, domain):
     if(len(country_module_data) == 1):
