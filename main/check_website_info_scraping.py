@@ -14,10 +14,10 @@ with open(input_file, "r", encoding="utf-8") as infile:
     cases.pop(0)
 '''
 
-cases = json.loads(open(os.path.join("samples", "korea", "samples.json"), mode="r", encoding="utf-8").read())
+cases = json.loads(open(os.path.join("samples", "germany", "samples.json"), mode="r", encoding="utf-8").read())
 print(len(cases))
 
-country = "korea"
+country = "germany"
 all_counters = []
 sum_of_all_counters = {}
 
@@ -36,7 +36,7 @@ for i, input_data in enumerate(cases[:]):
     r = website_info(input_data["Website"], input_data["Organization Name"], country)
     all_data.append(r)
 
-    with open("korea_result.json", "w", encoding="utf-8") as outfile:
+    with open("germany_result.json", "w", encoding="utf-8") as outfile:
         outfile.write(json.dumps(all_data, indent=4, ensure_ascii=False))
         #print(json.dumps(r, indent=4, ensure_ascii=False))
 

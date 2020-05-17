@@ -550,6 +550,36 @@ COUNTRY_CONTEXTS = {
                 ")"
             ],
             "contact_text": ["Kontak", "Hubungi Kami", "contact", "Kontak Kami", "CONTACT US"]
+        },
+        "germany": {
+            "language": "de",
+            "country_code": "49",
+            "phone_phrases": ["Telefon"],
+            "phone_patterns": [],
+            "address_patterns": [
+                "(" +
+                    "(" + 
+                        "(address\W)|(Adresse\W)|(Besucheradresse)|(office\W)|(Büro\W)|(Headquarter\s?:)|(Hauptquartier\s?:)|" + 
+                        "([^\n]{2,30}Str\.)|([^\n]{2,30}Straße)|([^\n]{2,30}Strasse)|([^\n]{2,30}Allee)|([^\n]{2,30}\WD\s?-\s?\d)|" +
+                        "([^\n]{2,30}\nD\s*-\s*\d)|([^\n]{2,40}GmbH)" +
+                    ")" +
+                    "(" + 
+                        "[^@\{\}$%!;?<>\[\]\"]{3,100}" +
+                    ")" +
+                    "(" +
+                        "(germany)|(Deutschland)|" +
+                        "(Saarbrücken)|(Dresden)|(Kiel)|(Erfurt)|(Berlin)|(Stuttgart)|(Munich)|(München)|" +
+                        "(Potsdam)|(Bremen)|(Hamburg)|(Wiesbaden)|(Hanover)|(Hannover)|(Schwerin)|(Düsseldorf)|(Mainz)|" +
+                        "(Württemberg)|(Bavaria)|(Bayern)|(Brandenburg)|(Hesse)|(Hessen)|(Saxony)|(Niedersachsen)|" +
+                        "(Vorpommern)|(Westphalia)|(Westfalen)|(Palatinate)|(Pfalz)|(Saarland)|(Pomerania)|" +
+                        "(Sachsen)|(Anhalt)|(Magdeburg)|(Holstein)|(Thuringia)|(Thüringen)|" +
+                        "\D\d{5}\D[^\n]{2,30}|" +
+                        "(Cologne)|(Frankfurt)|(Dortmund)|(Essen)|(Leipzig)|(Nuremberg)"
+                    ")" +
+                ")",
+
+            ],
+            "contact_text": ["Kontakt", ]
         }
     }
 }
@@ -1177,6 +1207,10 @@ def find_phones(text, patterns, country):
     elif(country == "korea"):
         from root.country_tools.korea.tools import find_korean_phones
         phones = find_korean_phones(text, patterns)
+    
+    elif(country == "germany"):
+        from root.country_tools.germany.tools import find_german_phones
+        phones = find_german_phones(text, patterns)
 
     return phones
 
@@ -1261,6 +1295,11 @@ def find_addresses(text, patterns, country, is_contact_page=False):
     elif(country == "korea"):
         from root.country_tools.korea.tools import find_korean_addresses
         addresses = find_korean_addresses(text, patterns, is_contact_page)
+
+    elif(country == "germany"):
+        from root.country_tools.germany.tools import find_german_addresses
+        addresses = find_german_addresses(text, patterns, is_contact_page)
+
     return addresses
 
 def purify_addresses(address_list, country, original_source):
@@ -1312,6 +1351,10 @@ def purify_addresses(address_list, country, original_source):
     elif(country == "korea"):
         from root.country_tools.korea.tools import purify_korean_addresses
         purified_addresses = purify_korean_addresses(address_list)
+
+    elif(country == "germany"):
+        from root.country_tools.germany.tools import purify_german_addresses
+        purified_addresses = purify_german_addresses(address_list)
 
     return purified_addresses
 
